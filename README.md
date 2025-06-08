@@ -9,3 +9,4 @@
 - 각자 fork하여 작업
 ### 3. PR (Pull Request)
 - push 하면, review하고 수정이 완료되면 반영
+- 수정은 commit, push를 그대로 하면 됨
