@@ -6,4 +6,6 @@
 - .은 _로 변환하여 사용
 - ex) kevin.spreatics@gmail.com -> kevin_spreatics
 ### fork 
+- 각자 fork하여 작업
 ### PR (Pull Request)
+- push 하면, review하고 수정이 완료되면 반영
