@@ -22,12 +22,12 @@
    - nickname은 고유한 값이며 기존 사용자와 중복되면 생성이 실패한다.
 5. Response body
    - status (string): created, failed
-   - user_id (int): 생성 성공 시, user_id 반환
+   - nickname: 생성 성공 시, nickname 반환
    - reason (string): 실패 시, 실패 원인
 ~~~
 {
   "status": "created",
-  "user_id": 105
+  "nickname": "double_d_eo"
 }
 
 {
@@ -39,68 +39,78 @@
 1. Endpoint
   - POST/users/<user_id>
 2. Requset body
-  - id(int) : 사용자 id
+  - nickname (string) 
   - password(string) : 사용자 비밀번호
 ~~~
 {
-"user_id" : 105,
-"password" : "0106514aa@"
+   "nickname":"double_d_eo",
+   "password" : "0106514aa@"
 }
 ~~~
 3. Description
   - 사용자 인증하여 로그인한다
-  - 존재하지 않는 id이거나 password가 틀리면 로그인에 실패
+  - 존재하지 않는 nickname이거나 password가 틀리면 로그인에 실패
 4. Response Body
   - status(string) : success, failed
-  - user_id : 로그인 성공시 user_id 반환
+  - nickname(string): 로그인 성공시 nickname 반환
   - reason(string) : 실패시 실패 원인
 ~~~~
 {
-"status" : "success",
-"user_id" : 105
+   "status" : "success",
+   "nickname" : "double_d_eo"
 }
 {
-"status" : "failed",
-"reason" : "user_id, 104 is not exist"
+   "status" : "failed",
+   "reason" : "user_id, rlagustj0514 is not exist"
 }
 ~~~~
 ## 사용자 정보 조회
 1.Endpoint
    - Get/users/<user_id>
 2.Request body
+   - 없음
 3.Description
    - 사용자 정보를 조회한다
 4.Response body
-   - nickname
-   - name
-   - age
-   - email
+   - nickname(string)
+   - name(string)
+   - age(int)
+   - email(string)
+~~~~
+{
+   "nickname" : "double_d_eo",
+   "name" : "김현서",
+   "age": "" ,
+   "email" : "doubled0514@gamil.com"
+}
+~~~~
 ## 사용자 정보 수정
 1. Endpoint
-   - PATCH/users/<user_id>/
+   - PATCH/users/<user_id>
 2. Request body
-   - nickname(optional)
-   - name(optional)
-   - age(optional)
-   - email(optional)
+   - nickname(string,optional)
+   - name(string,optional)
+   - age(int,optional)
+   - email(string,optional)
 ~~~
 {
-"nickname" :"kevin"
+   "nickname" :"kevin"
 }
 ~~~  
 
 3. description
    - 사용자 정보를 수정한다. user_id는 수정할 수 없다
+   - nickname은 중복 불가능
 4. response body
    - status : success, failed
    - reason : 실패시, 실패 원인
 ~~~
 {
-"status" : "success"
+   "status" : "success"
 }
 {
-"status" :"failed",
-"reason" : "nickname, kevin is duplicated"
+   "status" :"failed",
+   "reason" : "nickname, kevin is duplicated"
 }
 ~~~
 ## 사용자 삭제
