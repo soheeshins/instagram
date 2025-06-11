@@ -39,7 +39,7 @@
 ~~~
 ## 사용자 인증 (로그인)
 1. Endpoint
-   - POST / users / Auth_users
+   - GET / users / Auth_users
 2. Request body 
    - nickname (string): 사용자 nickname, 필수
    - password (string): 비밀번호, 필수
@@ -67,6 +67,47 @@
 }
 ~~~
 ## 사용자 정보 조회
+1. Endpoint
+   - GET / users / user_id
+2. Request body
+   - user_id (int): 사용자 id, 필수
+   - nickname (string): 사용자 nickname, 필수
+   - name (string): 사용자 이름, 필수
+   - email (string, optional): 사용자 email 주소, 필수
+   - age (int, optional): 사용자 나이
+~~~
+{
+  "user_id": 105
+  "nickname": "Choi",
+  "name": "최흥기",
+  "email": "pamo23@naver.com"
+  "age": 32,
+}
+~~~4. Description
+   - user_id에 해당하는 사용자 계정 정보를 조회한다.
+   - user_id가 없으면 계정정보 조회가 실패한다.
+5. Response body
+   - status (string): selected, failed
+   - user_id (int): 조회 성공시, user_id 반환
+   - nickname (string): 조회 성공시, nickname 반환
+   - name (string): 조회 성공시, name 반환
+   - email (string): 조회 성공시, email 반환
+   - age (int): 조회 성공시, age 반환
+   - reason (string): 실패시, 실패 원인
+~~~
+{
+  "status": "selected",
+  "user_id": 105
+  "nickname": "Choi",
+  "name": "최흥기",
+  "email": "pamo23@naver.com"
+  "age": 32,
+}
+{
+  "status": "failed",
+  "reason": "user_id, 105 doesn't exist"
+}
+~~~
 ## 사용자 정보 수정
 ## 사용자 삭제
 1. Endpoint
