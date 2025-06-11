@@ -42,25 +42,23 @@
 
 ## 사용자 인증 (로그인)
 1. Endpoint
-    login/user
+   - login/user
 
 2. Request body 
    - user_no (INT AUTO_INCREMENT PRIMARY KEY): 유저 식별 번호(서버에서), 필수
-
    - user_id (String) : 사용자 id, 필수
    - password (string): 비밀번호, 필수
-   
    - login_botton (string? object?) : 
-   클릭시 서버에 id & password 매치 되는지 체크 하게 하는 버튼 
+   클릭시 서버에 id, password 매치 되는지 체크 하게 하는 버튼 
     
    
 ~~~
 
 {
-  "user_id": "charles",
-  "password": "1234",
-  "user_no"" : user_no
-
+    "user_id": "charles",
+    "password": "1234",
+    "user_no"" : user_no
+    "login_botton" : login
 }
 ~~~
 
