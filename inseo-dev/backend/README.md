@@ -248,10 +248,44 @@
   "post_id": 105,
   "user_id": 1
 }
+~~~
+~~~
 {
   "status": "failed",
   "reason": "post_id, 101 doesn't exist"
 }
 ~~~
 # 소셜
+## 다른 사용자 조회
+1. Endpoint
+   - GET /users/user_id_followee
+     - user_id_followee (int): 조회할 다른 사용자 id
+2. Request body 
+   - 없음
+3. Description
+   - user_id에 해당하는 사용자 계정을 조회한다.
+   - user_id가 없으면 조회가 실패한다.
+4. Response body
+   - status (string): success, failed
+   - user_id_followee (int): 성공시, 조회할 다른 사용자 id
+   - reason (string): 실패시, 실패 원인
+~~~
+{
+  "status":"success",
+  "user_id_followee":101
+}
+~~~
+~~~
+{
+  "status": "failed",
+  "reason": "user_id_followee, 101 doesn't exist"
+}
+~~~
+## 팔로우 신청
+## 팔로우한 목록을 조회
+## 자신에게 팔로우 요청한 목록을 조회
+## 팔로우를 수락/거절
 # 메시지
+## DM을 보내기
+## DM 조회하기
+## DM 삭제하기
