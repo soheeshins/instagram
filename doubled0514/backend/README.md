@@ -129,14 +129,95 @@
   "reason": "user_id, 101 doesn't exist"
 }
 ~~~
+
+
 # 포스팅
 ## 포스트 올리기
 1. Endpoint
-   - POST/
-2. 
+   - POST/users/<user_id>
+2. Request body
+   - nickname(string,필수)
+   - title(string,필수)
+   - text(string,opt)
+~~~
+{
+   "nickname" : "double_d_eo",
+   "title" : "덥다",
+   "text" : "에어컨이 안돼서 너무 더워요"
+}
+~~~
+3. Description
+   - nickname 기반으로 글 작성 
+4. Resopnse body
+   -stauts : success, failed
+   -title (string) : 성공시 제목 반환
+   -reason(string) : 실패시 실패 이유
+~~~
+{
+   "nickname" : "double_d_eo"
+   "status" : "success",
+   "title" : "덥다"
+}
+{
+   "staus" : "failed",
+   "reason" : "nickname, rlagustj0514 is not exist"
+}
+~~~
 ## 올라온 포스트 조회하기
+1. Endpoint
+   -GET/users/<user_id>
+2. Request body
+   -nickname(string)
+   -title(string)
+~~~~
+{
+   "title" : "덥다"
+}
+{
+   "nickname" : "double_d_eo"
+}
+~~~~
+   
+3. descriptionn
+   - nickname이나 title 기반으로 포스트 조회
+4. response body
+   - nickname
+   - title
+   - text
+   - status : success , failed
+   - reason : 실패시 실패 원인 
+~~~
+{
+   "nickname" : "double_d_eo",
+   "title" : "덥다",
+   "text" :"에어컨이 안돼서 너무 더워요"
+}
+{
+   "status" : "failed",
+   "reason" : "cannot find posts"
+}
+~~~
+
 ## 포스트의 코멘트 조회하기
+1. Endpoint
+   -GET/users/<user_id>
+2. Request body
+   - title(string,필수)
+   - nickname(string,필수)
+   - comment(string,
+4. Description
+   - title 기반으로 post 찾고 그에 달린 comment 조회
+5. 
+   
+6. Respond body
 ## 특정 포스트에 커멘트 달기
+1. Endpoint
+   -POST/<user_id>
+2. Request body
+   -
+3. 
+
+
 
 # 소셜
 ## 다른 사용자 조회
