@@ -68,4 +68,9 @@
   "status" : "failed",
   "reason" : "password ERROR"
 }
+{
+  "status": "failed",
+  "reason": "Missing required field: password"
+}
 ~~~
+
