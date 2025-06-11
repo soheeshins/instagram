@@ -37,13 +37,13 @@
 ~~~
 ## 사용자 인증 (로그인)
 1. Endpoint
-  - POST/users/<user_email>/<user_password>
+  - POST/users/<user_id>
 2. Requset body
-  - email(string) : 사용자 email 주소
+  - id(int) : 사용자 id
   - password(string) : 사용자 비밀번호
 ~~~
 {
-"email" : "doubled0514@gmail.con",
+"user_id" : 105,
 "password" : "0106514aa@"
 }
 ~~~
@@ -66,12 +66,36 @@
 ~~~~
 ## 사용자 정보 조회
 1.Endpoint
-   - Patch/
+   - Get/users/<user_id>
 2.Request body
 3.Description
+   - 사용자 정보를 조회한다
 4.Response body
-
+   - nickname
+   - name
+   - age
+   - email
 ## 사용자 정보 수정
+1. Endpoint
+   - PATCH/users/<user_id>/
+2. Request body
+   - nickname
+   - name
+   - age
+3. description
+   - 사용자 정보를 수정한다. email은 수정할 수 없다
+4. response body
+   - status : success, failed
+   - reason : 실패시, 실패 원인
+~~~
+{
+"status" : "success"
+}
+{
+"status" :"failed",
+"reason" : "nickname, kevin is duplicated"
+}
+~~~
 ## 사용자 삭제
 1. Endpoint
    - DELETE /users/<user_id>
