@@ -133,28 +133,63 @@
    - POST /users/<user_id>/posts
      - user_id (int): 포스트를 올릴 사용자 id
 2. Request body 
-   - post-title (string): 포스트 제목, 필수
-   - post-text (string): 포스트 내용, 필수
+   - post_title (string): 포스트 제목, 필수
+   - post_text (string): 포스트 내용, 필수
 ~~~
 {
-  "post-title": "포스트 제목",
-  "post-text": "포스트 내용"
+  "post_title": "포스트 제목",
+  "post_text": "포스트 내용"
 }
 ~~~
 3. Description
-   - 포스트를 생성한다. post-title과 post-text는 필수 입력값이다.
+   - 포스트를 생성한다. post_title과 post_text는 필수 입력값이다.
 4. Response body
    - status (string): created, failed
    - post_id (int): 생성 성공 시, post_id 반환
+   - user_id (int): 생성 성공 시, user_id 반환
    - posting_date (datetime): 생성 성공시, posting_date 반환
    - reason (string): 실패 시, 실패 원인
 ~~~
 {
   "status": "created",
   "post_id": 105,
+  "user_id": 1,
   "posting_date: '2025-04-26 09:00:00.007'
 }
 ~~~
+## 올라온 포스트 조회하기
+1. Endpoint
+   - GET /users/<user_id>/posts/<post_id>
+     - user_id (int): 로그인한 사용자 id
+     - post_id (int): 조회할 포스트 id
+2. Request body 
+   - 없음
+3. Description
+   - post_id에 해당하는 포스트를 조회한다.
+   - post_id가 없으면 조회가 실패한다.
+4. Response body
+   - status (string): success, failed
+   - post_title (string): 성공시, 포스트 제목 반환
+   - post_text (string): 성공시, 포스트 내용 반환
+   - posting_date (datetime): 성공시, 개시 날짜 반환
+   - user_id: 성공시, 포스트 작성자 반환 
+   - reason (string): 실패시, 실패 원인
+~~~
+{
+  "status": "success",
+  "post_title": "this is post title",
+  "post_text": "this is post text",
+  "posting_date": "2025-04-26 09:00:00.007",
+  "user_id":"1"
+}
+~~~
+~~~
+{
+  "status": "failed",
+  "reason": "post_id, 101 doesn't exist"
+}
+~~~
+
 
 # 소셜
 # 메시지
