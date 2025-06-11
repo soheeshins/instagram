@@ -169,3 +169,43 @@
   "reason": "Invalid password format"
 }
 ~~~
+
+# 포스팅
+## 게시글 생성
+
+1. Endpoint  
+   - POST /posts
+
+2. Request body  
+   - title (string): 게시글 제목, 필수  
+   - content (string): 게시글 본문 내용, 필수  
+   - user_id (int): 작성자 ID, 필수
+
+3. Description  
+   - 사용자가 새 게시글을 작성
+   - 요청한 `user_id`의 사용자가 작성자로 기록
+
+~~~
+{
+  "title": "오늘의 일기",
+  "content": "우래옥 웨이팅 내앞에 40팀",
+  "user_id": 105
+}
+~~~
+
+4. response body
+   - status(string) : updated, failed
+   - post_id(int) : 생성된 게시글
+   - reason(string) : 실패 원인
+   
+~~~  
+{
+  "status": "created",
+  "post_id": 101
+}
+{
+  "status": "failed",
+  "reason": "Missing required field: content"
+}
+~~~
+
