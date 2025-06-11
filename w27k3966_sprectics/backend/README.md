@@ -73,3 +73,33 @@
   "reason": "Missing required field: password"
 }
 ~~~
+
+## 사용자 정보 조회
+1. Endpoint
+   - GET /users/<user_id>
+
+2. Request Body
+   -user_id (int) : 조회하려는 사용자 id
+
+3. Description
+   - 특정 user_id에 해당하는 사용자의 정보를 조회
+4. Response body
+   - status (string): success, failed
+   - user (object) : 사용자 정보 객체 
+   - reason (string): 실패 시, 실패 원인
+
+~~~
+{
+ "status" : "success"
+    "user_id": 105,
+    "nickname": "sohee",
+    "name": "shinsohee",
+    "email": "sohee.spreatics@gmail.com"
+  }
+}
+{
+  "status": "failed",
+  "reason": "User not found"
+}
+
+~~~
