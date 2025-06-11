@@ -86,21 +86,19 @@
 ~~~~
 ## 사용자 정보 수정
 1. Endpoint
-   - PATCH/users/<user_id>
+   - PUT/users/<user_id>
 2. Request body
-   - nickname(string,optional)
    - name(string,optional)
    - age(int,optional)
    - email(string,optional)
 ~~~
 {
-   "nickname" :"kevin"
+   "age" :25
 }
 ~~~  
-
 3. description
    - 사용자 정보를 수정한다. user_id는 수정할 수 없다
-   - nickname은 중복 불가능
+   - nickname은 수정 불가능
 4. response body
    - status : success, failed
    - reason : 실패시, 실패 원인
@@ -110,7 +108,7 @@
 }
 {
    "status" :"failed",
-   "reason" : "nickname, kevin is duplicated"
+   "reason" : "age, 비밀 is not int type"
 }
 ~~~
 ## 사용자 삭제
@@ -132,5 +130,22 @@
 }
 ~~~
 # 포스팅
+## 포스트 올리기
+1. Endpoint
+   - POST/
+2. 
+## 올라온 포스트 조회하기
+## 포스트의 코멘트 조회하기
+## 특정 포스트에 커멘트 달기
+
 # 소셜
+## 다른 사용자 조회
+## 팔로우 신청
+## 팔로우한 목록 조회
+## 자신에게 팔로우 요청한 목록 조회
+## 팔로우를 수락/거절
+
 # 메시지
+## DM 보내기
+## DM 조회하기
+## DM 삭제하기
