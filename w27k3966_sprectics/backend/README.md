@@ -106,3 +106,9 @@
 }
 
 ~~~
+
+## 사용자 정보 수정
+1. Endpoint
+   - PUT /users/<user_id>
+
+   - reason (string): 실패 시, 실패 원인
