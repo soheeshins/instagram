@@ -154,7 +154,7 @@
   "status": "created",
   "post_id": 105,
   "user_id": 1,
-  "posting_date: '2025-04-26 09:00:00.007'
+  "posting_date": '2025-04-26 09:00:00.007'
 }
 ~~~
 ## 올라온 포스트 조회하기
@@ -189,7 +189,69 @@
   "reason": "post_id, 101 doesn't exist"
 }
 ~~~
-
-
+## 포스트의 커맨트 조회하기
+1. Endpoint
+   - GET /users/<user_id>/posts/<post_id>/comments
+     - user_id (int): 로그인한 사용자 id
+     - post_id (int): 조회할 포스트 id
+2. Request body 
+   - 없음
+3. Description
+   - post_id에 해당하는 포스트의 커맨트를 조회한다.
+   - post_id가 없으면 조회가 실패한다.
+   - 커맨트가 없으면 조회가 실패한다.
+4. Response body
+   - status (string): success, failed
+   - comment_id (int): 성공시, 커맨트 id 반환
+   - post_id (int): 성공시, 포스트 id 반환
+   - user_id (int): 성공시, 해당 커맨트 작성 유저 id 반환
+   - comment_text (string): 성공시, 커맨트 내용 반환
+   - reason (string): 실패시, 실패 원인
+~~~
+{
+  "status": "success",
+  "comment_id":1,
+  "post_id":105,
+  "user_id":1,
+  "comment_text":"this is comment text"
+}
+~~~
+~~~
+{
+  "status": "failed",
+  "reason": "post_id, 101 doesn't exist"
+}
+~~~
+## 특정 포스트에 커맨트 달기
+1. Endpoint
+   - POST /users/<user_id>/posts/<post_id>/comments
+     - user_id (int): 커맨트를 작성할 사용자 id
+     - post_id (int): 커맨트를 작성할 포스트 id
+2. Request body 
+   - comment_text (string): 커맨트 내용, 필수
+~~~
+{
+  "comment_text": "커맨트 내용"
+}
+~~~
+3. Description
+   - 특정 포스트에 커맨트를 생성한다. comment_text는 필수 입력값이다.
+   - post_id가 없으면 커맨트 생성을 실패한다.
+4. Response body
+   - status (string): created, failed
+   - post_id (int): 생성 성공 시, post_id 반환
+   - user_id (int): 생성 성공 시, 작성자 user_id 반환
+   - reason (string): 실패 시, 실패 원인
+~~~
+{
+  "status": "created",
+  "post_id": 105,
+  "user_id": 1
+}
+{
+  "status": "failed",
+  "reason": "post_id, 101 doesn't exist"
+}
+~~~
 # 소셜
 # 메시지
