@@ -101,6 +101,38 @@
 }
 ~~~
 ## 사용자 정보 수정
+1. Endpoint
+   - PUT / users / <nickname> / <password>
+     - nickname (string): 정보를 수정할 사용자의 nickname
+     - password (string): 정보를 수젇할 사용자의 password
+2. Request body
+   - nickname (string): 사용자 nickname, 필수
+   - name (string): 사용자 이름, 필수
+   - password (string): 비밀번호, 필수
+   - email (string, optional): 사용자 email 주소
+   - age (int, optional): 사용자 나이
+4. Description
+   - nickname과 password에 해당하는 사용자 계정정보를 수정한다.
+   - nickname과 password가 일치하지 않으면 수정할 수 없다.
+   - nickname과 password가 일치하면 정보를 수정하고, 수정된 정보를 저장한다.
+5. Response body
+   - status (string): updated, failed
+   - nickname (string): 수정 성공시, nickname 반환
+   - name (string): 수정 성공시, name 반환
+   - email (string): 수정 성공시, email 반환
+   - reason (string): 실패시, 실패 원인
+~~~
+{
+  "status": "updated",
+  "nickname": "Jun",
+  "name": "최준기",
+  "email": "pamo12@nate.com",
+}
+{
+  "status": "failed",
+  "reason": "nickname, password was unmatched"
+}
+~~~
 ## 사용자 삭제
 1. Endpoint
    - DELETE /users/<user_id>
