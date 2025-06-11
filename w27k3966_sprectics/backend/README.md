@@ -50,13 +50,16 @@
   "password": "1234"
 }
 ~~~
+
 3. Description
    - 사용자 nickname과 password 입력
    - 틀릴 경우 Error
+   - 
 4. Response body
    - status (string): success, failed
    - user_id (int) : 로그인 성공한 사용자 id
-   - reason (string): 실패 시, 실패 원인 
+   - reason (string): 실패 시, 실패 원인
+   
 ~~~
 {
  "status" : "success",
@@ -85,6 +88,7 @@
 
 3. Description
    - 특정 user_id에 해당하는 사용자의 정보를 조회
+   - 
 4. Response body
    - status (string): success, failed
    - user (object) : 사용자 정보 객체 
@@ -110,5 +114,39 @@
 ## 사용자 정보 수정
 1. Endpoint
    - PUT /users/<user_id>
+   
+2. Request params
+   -user_id (int) : 수정하려는 사용자 id
+   
+3. Request body  
+   - nickname (string, optional): 새로운 nickname  
+   - name (string, optional): 새로운 이름  
+   - password (string, optional): 새로운 비밀번호  
+   - email (string, optional): 이메일 변경
 
+4. Description  
+   - 특정 user_id에 해당하는 사용자의 정보를 수정 
+   - body에 포함된 항목만 수정되며, 입력하지 않은 필드는 유지
+~~~
+{
+ "nickname" : "newsohee",
+  "password" : "13579"
+}
+~~~
+5. Response body
+   - status (string): success, failed
    - reason (string): 실패 시, 실패 원인
+
+~~~
+{
+  "status": "success"
+}
+{
+  "status": "failed",
+  "reason": "User not found"
+}
+{
+  "status": "failed",
+  "reason": "Invalid password format"
+}
+~~~
