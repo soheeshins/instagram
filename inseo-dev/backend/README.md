@@ -38,7 +38,7 @@
 ~~~
 ## 사용자 인증 (로그인)
 1. Endpoint
-   - post /users
+   - POST /users
 2. Request body 
    - nickname (string): 사용자 nickname, 필수
    - password (string): 사용자 비밀번호, 필수
