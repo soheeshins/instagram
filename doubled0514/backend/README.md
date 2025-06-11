@@ -49,7 +49,7 @@
 ~~~
 3. Description
   - 사용자 인증하여 로그인한다
-  - 존재하지 않는 email이거나 password가 틀리면 로그인에 실패
+  - 존재하지 않는 id이거나 password가 틀리면 로그인에 실패
 4. Response Body
   - status(string) : success, failed
   - user_id : 로그인 성공시 user_id 반환
@@ -61,7 +61,7 @@
 }
 {
 "status" : "failed",
-"reason" : "email, rlagustj0514@naver.com is not exist"
+"reason" : "user_id, 104 is not exist"
 }
 ~~~~
 ## 사용자 정보 조회
@@ -79,11 +79,18 @@
 1. Endpoint
    - PATCH/users/<user_id>/
 2. Request body
-   - nickname
-   - name
-   - age
+   - nickname(optional)
+   - name(optional)
+   - age(optional)
+   - email(optional)
+~~~
+{
+"nickname" :"kevin"
+}
+~~~  
+
 3. description
-   - 사용자 정보를 수정한다. email은 수정할 수 없다
+   - 사용자 정보를 수정한다. user_id는 수정할 수 없다
 4. response body
    - status : success, failed
    - reason : 실패시, 실패 원인
