@@ -145,6 +145,25 @@
   "status": "failed",
   "reason": "User not found"
 }
+
+## 사용자 삭제
+1. Endpoint
+   - DELETE /users/<user_id>
+     - user_id (int): 삭제할 사용자 id
+2. Request body 
+   - 없음
+4. Description
+   - user_id에 해당하는 사용자 계정을 삭제
+   - user_id가 없으면 삭제가 실패
+5. Response body
+   - status (string): deleted, failed
+   - reason (string): 실패시, 실패 원인
+~~~
+{
+  "status": "failed",
+  "reason": "user_id, User not found"
+}
+~~~
 {
   "status": "failed",
   "reason": "Invalid password format"
