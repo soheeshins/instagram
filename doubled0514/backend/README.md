@@ -6,6 +6,7 @@
    - POST /users
 2. Request body 
    - nickname (string): 사용자 nickname, 필수
+   - password(string) : 비밀번호,필수
    - name (string): 사용자 이름, 필수
    - age (int, optional): 사용자 나이
    - email (string, optional): 사용자 email 주소
@@ -36,7 +37,7 @@
 ~~~
 ## 사용자 인증 (로그인)
 1. Endpoint
-  - POST/users
+  - POST/users/<user_email>/<user_password>
 2. Requset body
   - email(string) : 사용자 email 주소
   - password(string) : 사용자 비밀번호
@@ -64,6 +65,11 @@
 }
 ~~~~
 ## 사용자 정보 조회
+1.Endpoint
+   - Patch/
+2.Request body
+3.Description
+4.Response body
 
 ## 사용자 정보 수정
 ## 사용자 삭제
