@@ -128,7 +128,7 @@
 ~~~
 
 # 포스팅
-## 포스트 올리기(진행중)
+## 포스트 올리기
 1. Endpoint
    - POST /users/<user_id>/posts
      - user_id (int): 포스트를 올릴 사용자 id
@@ -153,11 +153,7 @@
   "status": "created",
   "post_id": 105
 }
-
-{
-  "status": "failed",
-  "reason": "nickname, kevin is duplicated"
-}
 ~~~
+
 # 소셜
 # 메시지
