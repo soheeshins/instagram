@@ -151,7 +151,8 @@
 ~~~
 {
   "status": "created",
-  "post_id": 105
+  "post_id": 105,
+  "posting_date: '2025-04-26 09:00:00.007'
 }
 ~~~
 
