@@ -55,10 +55,12 @@
    - 틀릴 경우 Error
 4. Response body
    - status (string): success, failed
+   - user_id (int) : 로그인 성공한 사용자 id
    - reason (string): 실패 시, 실패 원인 
 ~~~
 {
- "status" : "success"
+ "status" : "success",
+ "user_id" : 105
 }
 {
   "status" : "failed",
@@ -90,7 +92,8 @@
 
 ~~~
 {
- "status" : "success"
+ "status" : "success",
+ "user" : {
     "user_id": 105,
     "nickname": "sohee",
     "name": "shinsohee",
