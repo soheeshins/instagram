@@ -39,8 +39,8 @@
 1. Endpoint
   - POST/users/login
 2. Requset body
-  - nickname (string) 
-  - password(string) : 사용자 비밀번호
+  - nickname (string,필수) 
+  - password(string,필수) : 사용자 비밀번호
 ~~~
 {
    "nickname":"double_d_eo",
@@ -70,7 +70,7 @@
 2.Request body
    - 없음
 3.Description
-   - 사용자 정보를 조회한다
+   - <users_id>에 대응하는 사용자 정보를 조회한다
 4.Response body
    - nickname(string)
    - name(string)
@@ -88,17 +88,20 @@
 1. Endpoint
    - PUT/users/<user_id>
 2. Request body
-   - name(string,optional)
-   - age(int,optional)
-   - email(string,optional)
+   - password(string,필수)
+   - nickname(string,opt)
+   - name(string,opt)
+   - age(int,opt)
+   - email(string,opt)
 ~~~
 {
-   "age" :25
+   "password":"qwerty1234",
+   "age" : 25
 }
 ~~~  
 3. description
-   - 사용자 정보를 수정한다. user_id는 수정할 수 없다
-   - nickname은 수정 불가능
+   - 사용자 정보를 수정한다.
+   - 본인만 수정할 수 있도록 password 입력
 4. response body
    - status : success, failed
    - reason : 실패시, 실패 원인
@@ -108,7 +111,7 @@
 }
 {
    "status" :"failed",
-   "reason" : "age, 비밀 is not int type"
+   "reason" : "age is wrong type"
 }
 ~~~
 ## 사용자 삭제
@@ -197,7 +200,9 @@
 3. Description
    - user_id에 대응하는 사용자의 포스트의 코멘트 조회
 4. Respond body
-
+   - status (string) : 실패,성공
+   - comment (string) : 성공시 코멘트 조회
+   - reason (string) : 실패시 이유
 
 ## 특정 포스트에 커멘트 달기
 1. Endpoint
