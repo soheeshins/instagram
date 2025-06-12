@@ -37,7 +37,7 @@
 ~~~
 ## 사용자 인증 (로그인)
 1. Endpoint
-  - POST/users/<user_id>
+  - POST/users/login
 2. Requset body
   - nickname (string) 
   - password(string) : 사용자 비밀번호
@@ -52,16 +52,16 @@
   - 존재하지 않는 nickname이거나 password가 틀리면 로그인에 실패
 4. Response Body
   - status(string) : success, failed
-  - nickname(string): 로그인 성공시 nickname 반환
+  - user_id(int): 로그인 성공시 user_id 반환
   - reason(string) : 실패시 실패 원인
 ~~~~
 {
    "status" : "success",
-   "nickname" : "double_d_eo"
+   "user_id" : 105
 }
 {
    "status" : "failed",
-   "reason" : "user_id, rlagustj0514 is not exist"
+   "reason" : "nickname or password is wrong"
 }
 ~~~~
 ## 사용자 정보 조회
@@ -134,22 +134,21 @@
 # 포스팅
 ## 포스트 올리기
 1. Endpoint
-   - POST/users/<user_id>
+   - POST/users/<user_id>/post
 2. Request body
-   - nickname(string,필수)
    - title(string,필수)
    - text(string,opt)
 ~~~
 {
-   "nickname" : "double_d_eo",
    "title" : "덥다",
    "text" : "에어컨이 안돼서 너무 더워요"
 }
 ~~~
 3. Description
-   - nickname 기반으로 글 작성 
+
 4. Resopnse body
    -stauts : success, failed
+   -nickname(string) : user_id에 대응하는 닉네임 반환
    -title (string) : 성공시 제목 반환
    -reason(string) : 실패시 실패 이유
 ~~~
@@ -160,34 +159,26 @@
 }
 {
    "staus" : "failed",
-   "reason" : "nickname, rlagustj0514 is not exist"
+   "reason" : "user_id is not exist"
 }
 ~~~
 ## 올라온 포스트 조회하기
 1. Endpoint
-   -GET/users/<user_id>
+   -GET/users/<user_id>/post
 2. Request body
-   -nickname(string)
    -title(string)
-~~~~
-{
-   "title" : "덥다"
-}
-{
-   "nickname" : "double_d_eo"
-}
-~~~~
-   
 3. descriptionn
-   - nickname이나 title 기반으로 포스트 조회
+   - user_id에 대응하는 사용자의 post 조회
+   - title로 포스트 조회
 4. response body
-   - nickname
-   - title
-   - text
+   - nickname (string)
+   - title(string)
+   - text(string)
    - status : success , failed
    - reason : 실패시 실패 원인 
 ~~~
 {
+   "status" : "success",
    "nickname" : "double_d_eo",
    "title" : "덥다",
    "text" :"에어컨이 안돼서 너무 더워요"
@@ -200,23 +191,26 @@
 
 ## 포스트의 코멘트 조회하기
 1. Endpoint
-   -GET/users/<user_id>
+   -GET/users/<user_id>/post/comment
 2. Request body
-   - title(string,필수)
-   - nickname(string,필수)
-   - comment(string,
-4. Description
-   - title 기반으로 post 찾고 그에 달린 comment 조회
-5. 
-   
-6. Respond body
+   - title (string, opt)
+3. Description
+   - user_id에 대응하는 사용자의 포스트의 코멘트 조회
+4. Respond body
+
+
 ## 특정 포스트에 커멘트 달기
 1. Endpoint
-   -POST/<user_id>
+   -POST/users/<user_id>/post/comment
 2. Request body
-   -
-3. 
-
+   -user_id(int) : 커멘트 다는 사용자의 id
+   -comment(string) : 커멘트
+3. Description 
+   - 
+4. Response body
+   -status(string) :성공, 실패
+   -comment(string): 성공시 커멘트 반환
+   -reason(string): 실패시 이유
 
 
 # 소셜
