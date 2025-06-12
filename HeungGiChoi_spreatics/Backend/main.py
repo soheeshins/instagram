@@ -28,4 +28,8 @@ def follow(follower_id, followee_id):
             'followee_id': followee_id
             }
 
+@app.route('/users/<user_id>')
+def users(user_id):
+    return { 'message': 'post', 'user_id': user_id }
+
 app.run(debug=True, host='0.0.0.0', port=5000)
