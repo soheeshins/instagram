@@ -163,7 +163,6 @@
   "status": "failed",
   "reason": "user_id, User not found"
 }
-~~~
 {
   "status": "failed",
   "reason": "Invalid password format"
@@ -178,7 +177,7 @@
 
 2. Request body  
    - title (string): 게시글 제목, 필수  
-   - content (string): 게시글 본문 내용, 필수  
+   - text (string): 게시글 본문 내용, 필수  
    - user_id (int): 작성자 ID, 필수
 
 3. Description  
@@ -188,7 +187,7 @@
 ~~~
 {
   "title": "오늘의 일기",
-  "content": "우래옥 웨이팅 내앞에 40팀",
+  "text": "우래옥 웨이팅 내앞에 40팀",
   "user_id": 105
 }
 ~~~
@@ -205,7 +204,7 @@
 }
 {
   "status": "failed",
-  "reason": "Missing required field: content"
+  "reason": "Missing required field: text"
 }
 ~~~
 
