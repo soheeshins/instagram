@@ -145,7 +145,7 @@
   "status": "failed",
   "reason": "User not found"
 }
-
+~~~
 ## 사용자 삭제
 1. Endpoint
    - DELETE /users/<user_id>
