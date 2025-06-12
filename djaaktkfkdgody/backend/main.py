@@ -24,5 +24,10 @@ def follow(follower_id, followee_id):
             'followee_id':followee_id
             }
 
+@app.route('users/<user_id>')
+def user_idd(user_idd):
+    print(f'user_idd {user_idd}')
+    return {'message':'dms', 'user_id':user_idd}
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
