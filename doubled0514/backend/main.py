@@ -8,6 +8,10 @@ def hello():
 def hello_name(name):
     print("/hello/{name}/endpoint")
     return {'message' :'hello','name': name}
+@app.route('/hello/user/<user_id>')
+def users(user_id):
+    print('users')
+    return{'message':'endpoint=users','user_id':user_id}    
 
 # method 디폴트는 get
 @app.route('/users/<user_id>/posts')
