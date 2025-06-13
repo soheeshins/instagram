@@ -73,6 +73,8 @@ def create_post():
             """
             cursor.execute(sql_create, (post_title, post_text, post_date, user_id))
             new_post_id = cursor.lastrowid
+
+        conn.commit()
         
         return {
             "status": "posting success",
@@ -83,6 +85,59 @@ def create_post():
                 "status": "failed",
                 "reason": "please write down anything in your post"
                 }
+
+    
+@app.route('/delete_post', methods = ['POST'])
+def delete_post():
+    
+    #user 받아오기
+    user = request.get_json()
+    user_id = user["user_id"]
+
+    #sql 연결
+    conn = get_connection()
+    
+    #sql(user_id)가 user(user_id)인 포스팅 가져오기 
+    with conn.cursor() as cursor:
+        sql = """
+        Select * from post 
+        where user_id = %s
+        """
+        
+        cursor.execute(sql, (user_id,))
+        rows = cursor.fetchall()
+        for row in rows:
+            print(row)
+
+    conn.commit()
+
+    #포스팅 중 지우고 싶은 post_id 받아오기
+    post = request.get_json()
+    post_id = post['post_id']
+
+    #sql(post_id)가 post(post_id)인 포스팅 지우기
+    with conn.cursor() as cursor:
+        sql = """
+        Delete from post 
+        where post_id = %s
+        """
+        cursor.execute(sql, (post_id,))
+        deleted_rows = cursor.rowcount
+    conn.commit()
+
+    if deleted_rows == 0:
+        return {
+            "status": "failed",
+            "reason": "no post found with that post_id"
+        }
+    else:
+        return {
+            "status": "deleted",
+            "post_id": post_id
+        }
+
+
+  
 
 
 app.run(debug=True, host='0.0.0.0', port=5001)
