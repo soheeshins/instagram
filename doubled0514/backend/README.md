@@ -216,6 +216,19 @@
 
 # 소셜
 ## 다른 사용자 조회
+1. Endpoint
+   - GET/users
+2. Request body
+   - user_id(int)
+   - nickname(string)
+3. Description
+   - user_id 또는 nickname으로 조회한다
+4. Response body
+   - status(string) : 성공,실패
+   - user_id
+   - nickname
+   - email
+   - age
 ## 팔로우 신청
 ## 팔로우한 목록 조회
 ## 자신에게 팔로우 요청한 목록 조회
