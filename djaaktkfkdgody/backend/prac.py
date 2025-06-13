@@ -10,3 +10,5 @@ def helloo_name(name):
     return f'helloo {name}'
 
 app.run(host='0.0.0.0', port=5000, debug=True)
+
+print('dkdk')
