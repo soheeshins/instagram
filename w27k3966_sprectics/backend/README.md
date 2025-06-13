@@ -217,7 +217,6 @@
    - GET /posts
 2. Request body
    - user_id (int, optional): 특정 사용자의 포스트만 조회
-   - post : 모든 포스트 가져오기
 3. Description
    - 전체 또는 특정 사용자의 포스트 목록을 조회
   
@@ -267,12 +266,12 @@
 1. Endpoint
    - POST /posts/{post_id}/comments
 2. Request body
-   - user_
+   - user_id (string) : post 작성한 사용자의 id, 필수
 3. Description
-   - 지정된 post_id의 커맨트 목록을 조회한다.
+   - 지정된 post_id의 커맨트 작성한다.
 4. Response body
    - status (string): "success" 또는 "failed"
-   - comments(arry):
+   - comments(array):
      {
       post_id (int)
       comment_id (int)
@@ -298,7 +297,7 @@
    - 사용자 목록을 조회한다.
 4. Response body
    - status (string): "success" 또는 "failed"
-   - users (array): [{ user_id, nickname, name, profile_url }]
+   - users (array): [{ user_id, nickname, name }]
   
 ~~~
 {
