@@ -8,7 +8,7 @@
    - nickname (string): 사용자 nickname, 필수
    - name (string): 사용자 이름, 필수
    - password (string): 비밀번호, 필수
-   - age (int, optional): 사용자 나이
+   - birthday (string): 사용자 생년월일, 필수
    - email (string, optional): 사용자 email 주소
 ~~~
 {
