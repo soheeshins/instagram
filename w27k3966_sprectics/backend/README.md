@@ -378,7 +378,7 @@
 ## 팔로우 신청
 
 1. Endpoint
-   -POST /follow
+   - POST /follow
 
 2. Request body
    - follower_no( int, 필수): 요청자 user_id
