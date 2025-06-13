@@ -1,5 +1,5 @@
 # REST API Spec.
-- version 0.1 (2025/6/11)
+- version 0.1 (2025/6/13)
 # 사용자 계정
 ## 사용자 생성
 1. Endpoint
