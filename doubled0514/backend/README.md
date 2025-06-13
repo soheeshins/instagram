@@ -228,7 +228,7 @@
    - user_id
    - nickname
    - email
-   - age
+   - age(int)
 ## 팔로우 신청
 ## 팔로우한 목록 조회
 ## 자신에게 팔로우 요청한 목록 조회
