@@ -138,20 +138,22 @@
 1. Endpoint
    - POST/posts
 2. Request body
-   - title(string,필수)
+   - user_id(int,필수) 
+   - title(string,opt)
    - text(string,opt)
 ~~~
 {
+   "user_id" : 105
    "title" : "덥다",
    "text" : "에어컨이 안돼서 너무 더워요"
 }
 ~~~
 3. Description
-
+   - user_id 의 사용자가 포스트 작성
 4. Resopnse body
-   -stauts : success, failed
-   -post_id(int) : 성공시 post id 반환
-   -reason(string) : 실패시 실패 이유
+   - stauts : success, failed
+   - post_id(int) : 성공시 post id 반환
+   - reason(string) : 실패시 실패 이유
 ~~~
 {
    "status" : "success",
@@ -173,18 +175,16 @@
    - 전체 포스트를 조회한다
    - post_id, user_id, nickname에 기반해 조회할 수 있다
 5. response body
-   - nickname (string)
-   - title(string)
-   - text(string)
+   - [{"nickname":nickname, "title":title, "text":text},
+      {"nickname":nickname, "title":title, "text":text}, ...]
    - status : success , failed
    - reason : 실패시 실패 원인 
 ~~~
-{
-   "status" : "success",
-   "nickname" : "double_d_eo",
+[ { "nickname" : "double_d_eo",
    "title" : "덥다",
-   "text" :"에어컨이 안돼서 너무 더워요"
-}
+   "text" :"에어컨이 안돼서 너무 더워요"},
+{"nickname":"sinsohee", "title":"별로 안더움","text":"여름 치고는 시원한 편"} ]
+
 {
    "status" : "failed",
    "reason" : "cannot find posts"
@@ -199,8 +199,8 @@
    - post_id에 대응하는 사용자의 포스트의 코멘트 조회
 4. Respond body
    - status (string) : 실패,성공
-   - comment (string) : 성공시 코멘트 조회
    - reason (string) : 실패시 이유
+   - [{"nickname":nickname(string), "comment":comment(string)},{"nickname":nickname(string), "comment":comment(string)}, ...]
 
 ## 특정 포스트에 커멘트 달기
 1. Endpoint
