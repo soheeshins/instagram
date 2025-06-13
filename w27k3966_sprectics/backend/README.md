@@ -216,35 +216,43 @@
 1. Endpoint  
    - GET /posts
 2. Request body
-   - user_id (int, optional): 특정 사용자의 포스트만 조회
+   - 없음
 3. Description
    - 전체 또는 특정 사용자의 포스트 목록을 조회
+   - 각 게시글에 user정보 포함
   
 4. Response body
 
    - status (string): "success" 또는 "failed"
-   - posts (array of objects): 
-      {post_id (int)
-       user_id (int)
-       text (string)
-       comment_count(int)
-       like_count (int)}
+   - posts (array): 게시글 목록
    - reason (string): 실패 시 원인
 
 ~~~
 {
   "status": "success",
-  "posts": [ { /* ... */ } ]
-}
+  "posts": [
+    {
+      "post_id": 101,
+      "title": "오늘의 일기",
+      "text": "우래옥 웨이팅 내앞에 40팀",
+      "posting_date": "2025-06-13 10:20:00",
+      "user": {
+        "user_id": 105,
+        "nickname": "sohee",
+        "name": "shinsohee"
+      }
+    }
 ~~~
 
 ## 포스트의 커맨드 조회하기
 1. Endpoint
-   - GET /posts/{post_id}/comments
-2. Request body
-   -없음
+   - GET /posts/<post_id>/comments
+2. Request parmas
+   - post_id (int):  댓글을 조회할 게시물 ID
 3. Description
-   - 지정된 post_id의 커맨트 목록을 조회한다.
+   - 지정된 post_id의 커맨트 목록을 조회
+   - 각 댓글에 user정보 포함
+   
 4. Response body
    - status (string): "success" 또는 "failed"
    - comments(arry):
@@ -258,17 +266,39 @@
 ~~~
 {
   "status": "success",
-  "comments": [ { /* ... */ } ]
+  "comments": [
+          {
+         "post_id": 101,
+         "comment_id": 202,
+         "user_id": 106,
+         "text": "헉 진짜 맛있겠다"
+       }
+   ]
 }
+{
+  "status": "failed",
+  "reason": "Post not found"
+}
+
 ~~~
 
 ## 특정 포스트의 커맨드 달기
 1. Endpoint
-   - POST /posts/{post_id}/comments
+   - POST /posts/<post_id>/comments
 2. Request body
    - user_id (string) : post 작성한 사용자의 id, 필수
+   - text (string) : 댓글 내용 (필수)
+~~~
+{
+  "user_id": 105,
+  "text": "저도 가봤어요! 진짜 맛있죠"
+}
+~~~
 3. Description
-   - 지정된 post_id의 커맨트 작성한다.
+   - 지정된 post_id의 커맨트 작성
+   - user_id와 text 필수, 유효하지않은 경우 실패
+   - 작성된 댓글은 ID와 함께 저장
+   
 4. Response body
    - status (string): "success" 또는 "failed"
    - comments(array):
@@ -282,8 +312,28 @@
 ~~~
 {
   "status": "success",
-  "comments": [ { /* ... */ } ]
+  "comments": [
+    {
+      "post_id": 101,
+      "comment_id": 201,
+      "user_id": 105,
+      "text": "저도 가봤어요."
+    }
+  ]
 }
+{
+  "status": "failed",
+  "reason": "Missing required field: user_id"
+}
+{
+  "status": "failed",
+  "reason": "Post not found"
+}
+{
+  "status": "failed",
+  "reason": "User_id not found"
+}
+
 ~~~
 
 # 소셜
@@ -292,28 +342,47 @@
 1. Endpoint
    - GET /users
 2. Query parameters
-   - search (string, optional): 닉네임 또는 이름 검색어
+   - user_id (int, optional): 조회할 대상 사용자 ID
+   - nickname(string, optional) : 조회할 닉네임
+     
 3. Description
-   - 사용자 목록을 조회한다.
+   - 사용자 또는 닉네임을 이용해 정보를 조회
+   - 두 파라미터 중 하나 이상이 필요
+   - 두 파라미터를 동시에 제공하면, AND로 조회
+   - 조회 결과 없으면 실패
 4. Response body
    - status (string): "success" 또는 "failed"
-   - users (array): [{ user_id, nickname, name }]
+   - user (object): 사용자 정보 객체
+   - reason (string): 실패 시 원인
   
 ~~~
 {
   "status": "success",
-  "users": [ { /* ... */ } ]
+  "user": {
+    "user_id": 105,
+    "nickname": "sohee",
+    "name": "shinsohee"
+  }
 }
+{
+  "status": "failed",
+  "reason": "User not found"
+}
+{
+  "status": "failed",
+  "reason": "Missing query: user_id or nickname required"
+}
+
 ~~~
 
 ## 팔로우 신청
 
 1. Endpoint
-   -POST /follow_requests
+   -POST /follow
 
 2. Request body
-   - follower_no( int, required): 요청자 user_id
-   - followee_no( int, required): 대상 user_id
+   - follower_no( int, 필수): 요청자 user_id
+   - followee_no( int, 필수): 대상 user_id
 ~~~
 {
   "follower_no": 105,
@@ -329,8 +398,12 @@
   
 ~~~
 {
-  "status": "created",
+  "status": "succes",
   "request_no": 55
+}
+{
+  "status": "failed",
+  "reason": "User not found"
 }
 ~~~
 
@@ -338,45 +411,98 @@
 ## 팔로우한 목록 조회
 
 1. Endpoint
-   - GET /users/{user_no}/following
-2. Request body
-   - 없음
+   - GET /users/<user_id>/followee
+2. Request params
+   - user_id (int): 팔로우 목록을 조회할 사용자 ID
 3. Description
    - user_id가 팔로우한 사용자 목록을 반환
+   - follow 테이블에서 follower_no = user_id 조건으로 조회
+   - 상태가 accepted인 팔로우 관계만 조회
 4. Response body
    - status (string): "success" 또는 "failed"
-   - following (array of objects): [{ user_no, nickname, name }]
+   - following (array):
+     {
+      user_id (int)
+      name (string)
+      nickname (string)
+     }
+   - reason (string): 실패 시 원인
+
   
 ~~~
 {
   "status": "success",
-  "following": [ { /* ... */ } ]
+  "followees": [
+    {
+      "user_id": 110,
+      "nickname": "ming",
+      "name": "민지"
+    }
+  ]
 }
+{
+  "status": "failed",
+  "reason": "User not found"
+}
+{
+  "status": "failed",
+  "reason": "No accepted followees"
+}
+
 ~~~
 
 ## 자신에게 팔로우 요청한 목록 조회
 
 1. Endpoint
-   - GET /users/{user_no}/follow_requests
-2. Request body
-   - 없음
+   - GET /users/<user_id>/follow_requests
+2. Request params
+   - user_id (int): 요청을 받은 사용자 ID (= followee_no)
 3. Description
-   - user_id에게 온 팔로우 요청 목록을 반환한다.
+   - user_id에게 온 팔로우 요청 목록을 조회
 4. Response body
    - status (string): "success" 또는 "failed"
-   - requests (array of objects): [{ request_no, follower_no, created_at }]
+   - requests (array ): [
+        {request_no (int): 팔로우 요청 ID
+         follower_id (int): 팔로우 요청자 ID
+         nickname (string): 요청자 닉네임
+         name (string): 요청자 이름
+        }
+   - reason (string): 실패 시 원인
   
 ~~~
 {
   "status": "success",
-  "following": [ { /* ... */ } ]
+  "requests": [
+    {
+      "request_no": 301,
+      "follower_id": 105,
+      "nickname": "sohee",
+      "name": "신소희"
+    },
+    {
+      "request_no": 302,
+      "follower_id": 108,
+      "nickname": "jay",
+      "name": "제이"
+    }
+  ]
 }
+{
+  "status": "failed",
+  "reason": "User not found"
+}
+{
+  "status": "failed",
+  "reason": "nothing"
+}
+
+
 ~~~
 
 ## 팔로우 수락/거절
 
 1. Endpoint
-   - PATCH /follow_requests/{request_no}
+   - PATCH /follow_requests/<request_no>
 2. Request body
    - action (string, required): "accept" 또는 "reject"
 ~~~
@@ -386,13 +512,28 @@
 ~~~
 3. Description
    - 해당 팔로우 요청을 수락하거나 거절한다.
+   - status (string): "accepted" 또는 "rejected"
 4. Response body
-   - status (string): "updated" 또는 "failed"
+   - status (string): "success" 또는 "failed"
+   - updated_status (string): 적용된 상태 ("accepted", "rejected")
    - reason (string): 실패 시 원인
   
 ~~~
 {
-  "status": "updated"
+  "status": "success",
+  "updated_status": "accepted"
+}
+{
+  "status": "success",
+  "updated_status": "rejected"
+}
+{
+  "status": "failed",
+  "reason": "Request not found"
+}
+{
+  "status": "failed",
+  "reason": "Request already processed"
 }
 ~~~
 
