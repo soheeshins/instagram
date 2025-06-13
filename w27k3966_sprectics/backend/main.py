@@ -17,7 +17,8 @@ def create_user():
 
     return {
         'status': 'created',
-        'user_id': user_id
+        'user_id': user_id,
+        'email': email
     }
 
 app.run(debug=True, host='0.0.0.0', port=5001)
