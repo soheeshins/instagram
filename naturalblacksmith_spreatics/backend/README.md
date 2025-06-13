@@ -28,12 +28,12 @@
 ~~~
 {
   "status": "created",
-  "user_id": 105
+  "user_id": 1
 }
 
 {
   "status": "failed",
-  "reason": "nickname, kevin is duplicated"
+  "reason": "nickname, kevin is already taken. choose a different nickname"
 }
 ~~~
 ## 사용자 삭제
@@ -55,7 +55,69 @@
 }
 ~~~
 # 포스팅
+1. Endpoint
+    - POST /post/
+    - user_id (int): 포스팅 올리는 user_id
+
+2. Request body
+- post title: 포스팅 제목 (required)
+- post_text: 포스팅 내용 (required)
+- posting date: 포스팅 한 날짜 (required)
+
+3. Description 
+- posting date, post_text은 필수 입력 
+- post title는 선택 
+
+5. Response body
+ - status: post 
+
+#코멘트
+1. Endpoint
+    - POST /comment/<user_id>/<post_id>/<text>
+    - user_id (int): 포스팅 올리는 user_id
+
+2. Request body
+- post title: 포스팅 제목 (required)
+- post_text: 포스팅 내용 (required)
+- posting date: 포스팅 한 날짜 (required)
+
+3. Description 
+- posting date, post_text은 필수 입력 
+- post title는 선택 
+
+5. Response body
+
 
 # 소셜
+1. Endpoint
+    - POST /follow/
+    - user_id (int): 포스팅 올리는 user_id
+
+2. Request body
+- post title: 포스팅 제목 (required)
+- post_text: 포스팅 내용 (required)
+- posting date: 포스팅 한 날짜 (required)
+
+3. Description 
+- posting date, post_text은 필수 입력 
+- post title는 선택 
+
+5. Response body
+
 
 # 메시지
+1. Endpoint
+    - POST /DM/
+    - user_id (int): 포스팅 올리는 user_id
+
+2. Request body
+- post title: 포스팅 제목 (required)
+- post_text: 포스팅 내용 (required)
+- posting date: 포스팅 한 날짜 (required)
+
+3. Description 
+- posting date, post_text은 필수 입력 
+- post title는 선택 
+
+5. Response body
+
