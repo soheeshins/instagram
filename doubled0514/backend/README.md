@@ -66,16 +66,23 @@
 ~~~~
 ## 사용자 정보 조회
 1.Endpoint
-   - Get/users/<user_id>
+   - Get/users
+
 2.Request body
-   - 없음
+   - user_id(int)
+   - nickname(string)
+   - email(string)
+
 3.Description
-   - <users_id>에 대응하는 사용자 정보를 조회한다
+   - 각 정보에 대응하는 사용자 정보를 조회한다
+
 4.Response body
+   - status : 성공,실패
    - nickname(string)
    - name(string)
    - age(int)
    - email(string)
+   - reason : 실패시 이유 반환
 ~~~~
 {
    "nickname" : "double_d_eo",
@@ -86,7 +93,7 @@
 ~~~~
 ## 사용자 정보 수정
 1. Endpoint
-   - PUT/users/<user_id>
+   - PUT/users/<user_id>/<password>
 2. Request body
    - password(string,opt)
    - nickname(string,opt)
@@ -110,18 +117,17 @@
 }
 {
    "status" :"failed",
-   "reason" : "age is wrong type"
+   "reason" : "invalid user_id or password"
 }
 ~~~
 ## 사용자 삭제
 1. Endpoint
-   - DELETE /users/<user_id>
-     - user_id (int): 삭제할 사용자 id
+   - DELETE/users/<user_id>/<password>
 2. Request body 
    - 없음
 4. Description
    - user_id에 해당하는 사용자 계정을 삭제한다.
-   - user_id가 없으면 삭제가 실패한다.
+   - user_id나 password가 틀리면 삭제 실패
 5. Response body
    - status (string): deleted, failed
    - reason (string): 실패시, 실패 원인
