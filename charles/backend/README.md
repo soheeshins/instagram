@@ -23,7 +23,7 @@
   "nickname": "charles",
   "name": "김창순",
   "password": "1234",
-  "email": "charleskimjr@naver.com",
+  "email": "soon1234@naver.com",
   "age": 30
 }
 ~~~
@@ -57,7 +57,7 @@
 
 ## 사용자 인증 (로그인)
 1. Endpoint
-   - POST /login
+   - POST /users/login
 
 2. Request body
    - nickname (string, required): 가입된 사용자 별명
@@ -111,7 +111,9 @@
    - status (string): "success" 또는 "failed"
    - user (object): 사용자 
    
-   정보
+정보
+-성공시 
+
      - user_no (int)
      
      - nickname (string)
@@ -122,8 +124,8 @@
      
      - email (string, optional)
      
-
-   - reason (string): 실패 시 원인
+-실패시 \
+    - reason (string): 실패 시 원인
 
 ~~~json
 // 성공
@@ -134,7 +136,7 @@
     "nickname": "charles",
     "name": "김창순",
     "age": 30,
-    "email": "charleskimjr@naver.com",
+    "email": "soon1234@naver.com",
   }
 }
 
@@ -180,7 +182,7 @@
     "nickname": "charles_new",
     "name": "김창순",
     "age": 31,
-    "email": "charleskimjr@naver.com",
+    "email": "soon1234@naver.com",
 
   }
 }
@@ -228,16 +230,12 @@
 
 2. Request body
    - user_no   (int, required): 작성자 user_no
-   - image_url (string, optional): 이미지 URL
-   - caption   (string, optional): 설명
-   - location  (string, optional): 위치
+   - text   (string, optional): 작성자가 쓴글
 
 ~~~json
 {
   "user_no": 105,
-  "image_url": "https://example.com/photo.jpg",
-  "caption": "즐거운 여행!",
-  "location": "제주도"
+  "text": "날씨 너무 덥다."
 }
 ~~~
 
@@ -267,10 +265,9 @@
 1. Endpoint
    - GET /posts
 
-2. Query parameters
+2. Request body
    - user_no (int, optional): 특정 사용자의 포스트만 조회
-   - page    (int, optional): 페이지 번호 (default: 1)
-   - limit   (int, optional): 페이지당 개수 (default: 20)
+    - post : 모든 포스트 가져오기
 
 3. Description
    - 전체 또는 특정 사용자의 포스트 목록을 조회한다.
@@ -280,12 +277,11 @@
    - posts (array of objects):
      - post_id      (int)
      - user_no      (int)
-     - image_url    (string)
-     - caption      (string)
-     - created_at   (string)
+     - text         (string)
      - comment_count(int)
      - like_count   (int)
    - reason (string): 실패 시 원인
+
 ~~~json
 {
   "status": "success",
@@ -306,10 +302,10 @@
 4. Response body
    - status (string): "success" 또는 "failed"
    - comments (array):
+     - post_id      (int)
      - comment_id (int)
      - user_no    (int)
      - text       (string)
-     - created_at (string)
    - reason (string): 실패 시 원인
 
 ~~~json
@@ -357,8 +353,6 @@
 
 2. Query parameters
    - search (string, optional): 닉네임 또는 이름 검색어
-   - page   (int, optional): 페이지 번호 (default: 1)
-   - limit  (int, optional): 페이지당 개수 (default: 20)
 
 3. Description
    - 사용자 목록을 조회한다.
@@ -583,7 +577,9 @@
    - reason (string): 실패 시 원인
 
 ~~~json
-{
+{ //성공시
   "status": "deleted"
 }
-
+{ // 실패시
+  "status": "failed"
+}
