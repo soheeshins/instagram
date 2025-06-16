@@ -543,28 +543,37 @@
 1. Endpoint
    - POST /messages
 2. Request body
-   - sender_no (int, required): 발신자 user_id
+   - sender_id (int, required): 발신자 user_id
    - receiver_id (int, required): 수신자 user_id
-   - content (string, required): 메시지 내용 
+   - text (string, required): 메시지 내용 
 ~~~
 {
   "sender_no": 105,
   "receiver_no": 110,
-  "content": "안녕"
+  "text": "안녕"
 }
 ~~~
 3. Description
    - 새로운 DM을 생성하여 전송한다.
+   - 빈 메세지를 보내는 것은 허용되지 않는다.
 
 4. Response body
    - status (string): "success" 또는 "failed"
-   - message_no (int): 생성된 메시지 번호
+   - message_id (int): 생성된 메시지 번호(성공 시)
    - reason (string): 실패 시 원인
   
 ~~~
 {
   "status": "success",
-  "message_no": 200
+  "message_id": 200
+}
+{
+  "status": "failed",
+  "reason": "User not found"
+}
+{
+  "status": "failed",
+  "reason": "Text is required"
 }
 ~~~
 
@@ -572,38 +581,63 @@
 1. Endpoint
    - GET /messages
 2. Query parameters
-   - user_no (int, required): 조회할 사용자 user_id
-   - with (int, optional): 특정 사용자와의 대화 상대 user_id
-   - page (int, optional): 페이지 (default: 1)
-   - limit (int, optional): 페이지당 개수 (default: 30)
+   - receiver_id (int, 필수): 받은 메시지를 조회할 사용자 ID
 3. Description
 - 해당 사용자와 전체 또는 특정 상대방 간 DM 목록을 조회한다.
 4. Response body
    - status (string): "success" 또는 "failed"
-   - messages (array): [{ message_no, sender_no, receiver_no, content, created_at }]
+   - messages (array): [{ message_id, sender_id, text, send_at }]
 ~~~
 {
   "status": "success",
-  "messages": [ { /* ... */ } ]
+  "messages": [
+    {
+      "message_id": 203,
+      "sender_id": 110,
+      "text": "안녕! 사진 잘 봤어 :)",
+      "sent_at": "2025-06-13T13:50:00"
+    }
+   {
+     "status": "failed",
+     "reason": "User not found"
+   }
+   {
+     "status": "failed",
+     "reason": "Missing query parameter: receiver_id"
+   }
 }
 ~~~
 
 #DM 삭제하기
 1. Endpoint
-   - DELETE /messages/{message_no}
-2. Request body
-   - 없음
-3. Description
-   - 지정된 message_no의 DM을 삭제한다.
-4. Response body
+   - DELETE /messages/<message_id>
+2. Request params
+   - messgae_id(int) : 삭제할 메세지
+3. Request body
+   - user_id (int) : 메세지를 삭제하려는 사용자 ID
+4. Description
+   - 해당 메세지를 보낸 사용자만 삭제 가능
+   - 존재하지 않거나, 본인이 보낸 메세지가 아니면 실패
+   
+5. Response body
    - status (string): "deleted" 또는 "failed"
    - reason (string): 실패 시 원인
 ~~~
-{ //성공시
-  "status": "deleted"
+{
+  "status": "success"
 }
-{ // 실패시
-  "status": "failed"
+{
+  "status": "failed",
+  "reason": "Message not found"
 }
+{
+  "status": "failed",
+  "reason": "Permission denied"
+}
+{
+  "status": "failed",
+  "reason": "Missing required field: user_id"
+}
+
 ~~~
 
