@@ -221,15 +221,16 @@
 
 
 # 소셜
-## 다른 사용자 조회
+## 다른 사용자 조회 - #사용자 의 사용자조회와 다른 기능인가?
 1. Endpoint
    - GET/users
 2. Request body
-   - user_id(int)
-   - nickname(string)
+   - user_id(int,opt)
+   - nickname(string,opt)
 3. Description
-   - user_id 또는 nickname으로 조회한다
-4. Response body
+   - 모든 user를 조회한다 
+   - user_id 또는 nickname으로 조회할 수 있다
+5. Response body
    - status(string) : 성공,실패
    - user_id
    - nickname
@@ -244,8 +245,10 @@
 3. Description
    - user_id_follower가 user_id_followee에게 팔로우 신청
 4. response body
-   - status (string) : 성공(팔로우신청), 실패
+   - status (string) : pending
+   - message (string) : 팔로우 신청 완료
    - reason (string) : 실패시 이유 - 잘못된 user_id
+     
 ## 팔로우한 목록 조회
 1. Endpoint
    - GEt/follow/<user_id_follower>
@@ -263,10 +266,10 @@
 2. request body
 3. description
    - user_id_followee가 user_id인 사용자를 팔로우 요청을 보낸 목록을 조회한다
+   - status가 팔로우 요청 상태(pending)인 목록만 조회
 4. response body
    - user_id_follower (int)
    - nickname(string) : users 테이블과 조인하여 닉네임 조회
-   - status (string) : 팔로우 요청 상태인 목록만 조회
 
 ## 팔로우를 수락/거절
 1. Endpoint
