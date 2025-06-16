@@ -28,25 +28,20 @@ def create_user():
     with conn.cursor() as cursor:
         try:
             sql = """
-            INSERT INTO users (nickname, name, password, age, email)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO users (nickname, name, password, age, email) 
+                values (%s, %s, %s, %s, %s)
             """
             cursor.execute(sql, (nickname, name, password, age, email))
             conn.commit()
             user_id = cursor.lastrowid
 
         except pymysql.err.IntegrityError as e:
-            conn.rollback()
-            return {
-                "status": "failed",
-                "reason": f"nickname, {nickname} is duplicated"
-            }, 409
-
+            return { "status": "failed", "reason": str(e) }
     conn.close()
 
     return {
         "status": "created",
         "user_id": user_id
-    }, 201
+    }
 
 app.run(debug=True, host='0.0.0.0', port=5001)
