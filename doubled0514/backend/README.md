@@ -240,10 +240,10 @@
 
 ## 팔로우 신청
 1. Endpoint
-   - Post/follow/<user_id_follower>/<user_id_followee>
+   - Post/follow/<follower_id>/<followee_id>
 2. Request body
 3. Description
-   - user_id_follower가 user_id_followee에게 팔로우 신청
+   - follower_id가 followee_id에게 팔로우 신청
 4. response body
    - status (string) : pending
    - message (string) : 팔로우 신청 완료
@@ -251,34 +251,37 @@
      
 ## 팔로우한 목록 조회
 1. Endpoint
-   - GEt/follow/<user_id_follower>
+   - GEt/follow/following/<follower_id>
 2. request body
 3. description
-   - user_id가 user_id_follower인 사용자가 팔로잉하고 있는 목록을 조회한다
+   - user_id가 follower_id인 사용자가 팔로잉하고 있는 목록을 리스트로 조회
 4. response body
-   - user_id_followee (int)
-   - nickname (string) : users 테이블과 조인하여 닉네임 조회
-   - status (string) : 팔로우 신청중인지, 팔로우를 받았는지 상태
+   - followee_id (int)
+   - nickname (string) : 팔로우 중인 유저 닉네임 조회
+   - name(string) : 팔로우 중인 유저 이름
+   - email(string) : 팔로우 중인 유저 이메일
   
 ## 자신에게 팔로우 요청한 목록 조회
 1. Endpoint
-   - GET/follow/<user_id_followee>
+   - GET/follow/request/<followee_id>
 2. request body
 3. description
-   - user_id_followee가 user_id인 사용자를 팔로우 요청을 보낸 목록을 조회한다
+   - followee_id가 user_id인 사용자를 팔로우 요청을 보낸 목록을 조회한다
    - status가 팔로우 요청 상태(pending)인 목록만 조회
 4. response body
-   - user_id_follower (int)
-   - nickname(string) : users 테이블과 조인하여 닉네임 조회
-
+   - user_id(int) : 팔로우 요청한 유저의 id
+   - nickname(string) : 팔로워 닉네임 조회
+   - name (string) : 팔로워 이름
+   - email (string) : 팔로워 이메일
+  
 ## 팔로우를 수락/거절
 1. Endpoint
-   - Post/Follow/<user_id_followee>
+   - Post/follow/request/<followee_id>
 2. request body
    - status(string) : 수락 or 거절
-   - user_id_follwer(int)
+   - folower_id(int) : 팔로우 신청을 건 팔로워의 id
 3. description
-   - user_id_followee가 user_id인 사용자에게 걸려온 팔로우 신청을 수락할지 거절할지 결정
+   - follower_id가 user_id인 사용자에게 걸려온 팔로우 신청을 수락할지 거절할지 결정
 4. response body
    - status : 성공/실패
    - reason : 실패 시 이유
