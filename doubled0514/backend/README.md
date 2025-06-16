@@ -235,11 +235,51 @@
    - nickname
    - email
    - age(int)
-## 팔로우 신청
-## 팔로우한 목록 조회
-## 자신에게 팔로우 요청한 목록 조회
-## 팔로우를 수락/거절
+  
 
+## 팔로우 신청
+1. Endpoint
+   - Post/follow/<user_id_follower>/<user_id_followee>
+2. Request body
+3. Description
+   - user_id_follower가 user_id_followee에게 팔로우 신청
+4. response body
+   - status (string) : 성공(팔로우신청), 실패
+   - reason (string) : 실패시 이유 - 잘못된 user_id
+## 팔로우한 목록 조회
+1. Endpoint
+   - GEt/follow/<user_id_follower>
+2. request body
+3. description
+   - user_id가 user_id_follower인 사용자가 팔로잉하고 있는 목록을 조회한다
+4. response body
+   - user_id_followee (int)
+   - nickname (string) : users 테이블과 조인하여 닉네임 조회
+   - status (string) : 팔로우 신청중인지, 팔로우를 받았는지 상태
+  
+## 자신에게 팔로우 요청한 목록 조회
+1. Endpoint
+   - GET/follow/<user_id_followee>
+2. request body
+3. description
+   - user_id_followee가 user_id인 사용자를 팔로우 요청을 보낸 목록을 조회한다
+4. response body
+   - user_id_follower (int)
+   - nickname(string) : users 테이블과 조인하여 닉네임 조회
+   - status (string) : 팔로우 요청 상태인 목록만 조회
+
+## 팔로우를 수락/거절
+1. Endpoint
+   - Post/Follow/<user_id_followee>
+2. request body
+   - status(string) : 수락 or 거절
+   - user_id_follwer(int)
+3. description
+   - user_id_followee가 user_id인 사용자에게 걸려온 팔로우 신청을 수락할지 거절할지 결정
+4. response body
+   - status : 성공/실패
+   - reason : 실패 시 이유
+   
 # 메시지
 ## DM 보내기
 ## DM 조회하기
