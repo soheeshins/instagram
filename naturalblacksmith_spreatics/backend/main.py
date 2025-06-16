@@ -24,8 +24,8 @@ def create_user():
     nickname = data['nickname']
     pw = data['pw']
     name = data['name']
-    age = data['age']
-    email = data['email']
+    age = data.get('age')
+    email = data.get('email')
 
     if not nickname or not pw or not name:
         return {
@@ -59,13 +59,13 @@ def create_user():
         }
         
 
-#user 삭제 
-@app.route ('/user_delete', methods = ['POST'])
-def user_delete():
+#user 삭제 nickname 활용
+@app.route ('/delete_nickname', methods = ['DELETE'])
+def user_delete_nickname():
     data = request.get_json()
     
     #삭제할 계정 가져오기 
-    nickname = data['nickname']
+    nickname = data.get('nickname')
 
     #sql 연결
     conn = get_connection()
@@ -81,6 +81,50 @@ def user_delete():
         "status" : "user successfully deleted"
         }
 
+#user 삭제 user_id 활용
+@app.route ('/delete_id', methods = ['DELETE'])
+def user_delete_id():
+    data = request.get_json()
+    
+    #삭제할 계정 가져오기 
+    id = data['id']
+
+    #sql 연결
+    conn = get_connection()
+
+    try:
+        with conn.cursor() as cursor:
+            #user 찾기 
+            sql_check = """
+            select * from users 
+            where user_id = %s
+            """
+            cursor.execute(sql_check, (id,))
+            rows = cursor.fetchall()
+
+            if not rows:
+                return {
+                    "error" : "user not found"
+                }
+            
+            #user 삭제 
+            sql_delete = """
+            delete from users
+            where user_id = %s
+            """
+            cursor.execute(sql_delete, (id, ))
+            conn.commit()
+        
+        return {
+            "status" : "success",
+            "deleted user" : id
+        }
+
+    except Exception as e:
+        return {
+            "status" : "failed",
+            "error" : str(e)
+        }
 
 
 #포스팅
@@ -92,21 +136,19 @@ def create_post():
     
     post_title = data['title']
     post_text= data['text']
-    post_date = data['date']
     user_id = data['user_id']
 
     #sql insert data
     conn = get_connection()
 
-    if post_text and post_date: 
-        with conn.cursor() as cursor:
+    with conn.cursor() as cursor:
 
-            sql_create = """
-            Insert into post (title, post_text, posting_date, user_id) Values
-            (%s, %s, %s, %s)
-            """
-            cursor.execute(sql_create, (post_title, post_text, post_date, user_id))
-            new_post_id = cursor.lastrowid
+        sql_create = """
+        Insert into post (title, post_text, posting_date, user_id) Values
+        (%s, %s, %s, %s)
+        """
+        cursor.execute(sql_create, (post_title, post_text, post_date, user_id))
+        new_post_id = cursor.lastrowid
 
         conn.commit()
         
@@ -114,61 +156,8 @@ def create_post():
             "status": "posting success",
             "post_id": new_post_id
         }
-    else: 
-        return {
-                "status": "failed",
-                "reason": "please write down anything in your post"
-                }
-
     
-@app.route('/delete_post', methods = ['POST'])
-def delete_post():
-    
-    #user 받아오기
-    user = request.get_json()
-    user_id = user["user_id"]
-
-    #sql 연결
-    conn = get_connection()
-    
-    #sql(user_id)가 user(user_id)인 포스팅 가져오기 
-    with conn.cursor() as cursor:
-        sql = """
-        Select * from post 
-        where user_id = %s
-        """
-        
-        cursor.execute(sql, (user_id,))
-        rows = cursor.fetchall()
-        for row in rows:
-            print(row)
-
-    conn.commit()
-
-    #포스팅 중 지우고 싶은 post_id 받아오기
-    post = request.get_json()
-    post_id = post['post_id']
-
-    #sql(post_id)가 post(post_id)인 포스팅 지우기
-    with conn.cursor() as cursor:
-        sql = """
-        Delete from post 
-        where post_id = %s
-        """
-        cursor.execute(sql, (post_id,))
-        deleted_rows = cursor.rowcount
-    conn.commit()
-
-    if deleted_rows == 0:
-        return {
-            "status": "failed",
-            "reason": "no post found with that post_id"
-        }
-    else:
-        return {
-            "status": "deleted",
-            "post_id": post_id
-        }
+#포스팅 삭제    
 
 
   
