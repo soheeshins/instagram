@@ -7,17 +7,19 @@
 2. Request body 
    - nickname (string): 사용자 nickname, 필수
    - name (string): 사용자 이름, 필수
+   - password (string): 비밀번호, 필수
    - age (int, optional): 사용자 나이
    - email (string, optional): 사용자 email 주소
 ~~~
 {
   "nickname": "kevin",
   "name": "이승학",
+  "password": "1234",
   "email": "kevin.spreatics@gmail.com"
 }
 ~~~
 4. Description
-   - 사용자 계정을 생성한다. nickname과 name은 필수 입력값이다.
+   - 사용자 계정을 생성한다. nickname과 name, password는 필수 입력값이다.
    - nickname은 고유한 값이며 기존 사용자와 중복되면 생성이 실패한다.
 5. Response body
    - status (string): created, failed
@@ -53,5 +55,7 @@
 }
 ~~~
 # 포스팅
+
 # 소셜
+
 # 메시지
