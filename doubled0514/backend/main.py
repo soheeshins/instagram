@@ -42,86 +42,97 @@ def newid():
 
 @app.route("/users/login", methods=["POST"])
 def login():
-    data = request.get_json()
-    nickname = data['nickname']
-    password = data['password']
-    conn = get_connection()
-    with conn.cursor() as cursor:
-        cursor.execute("select * from users where nickname = %s and password = %s",(nickname,password))
-        user = cursor.fetchone()
-
+    try : 
+        data = request.get_json()
+        nickname = data['nickname']
+        password = data['password']
+        conn = get_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("select * from users where nickname = %s and password = %s",(nickname,password))
+            user = cursor.fetchone()
         if not user :
             return {'status':'failed','reason':'wrong nickname or password'}
+        return {'status':'success','user_id':user['user_id']}
     
-    return {'status':'success','user_id':user['user_id']}
+    except Exception as e:
+        return {'status': 'failed', 'reason': f'Unexpected error: {str(e)}'}
 
 @app.route('/users')
 def check():
-    data = request.get_json()
-    user_id = data.get('user_id')
-    nickname = data.get('nickname')
-    email = data.get('email')
-    name = data.get('name')
-    conn = get_connection()
-    with conn.cursor() as cursor:
-        cursor.execute(
-            "select nickname, name, age, email, user_id from users where user_id = %s or name = %s or email = %s or nickname =%s ", (user_id,name,email,nickname))
-        user = cursor.fetchone()
-        if not user :
-            return {'status':'failed', 'reason':'wrong informaion'}
-    return {'nickname':user['nickname'], 'name':user['name'], 'email':user['email'],'user_id':user['user_id'] }        
+    try:    
+        data = request.get_json()
+        user_id = data.get('user_id')
+        nickname = data.get('nickname')
+        email = data.get('email')
+        name = data.get('name')
+        conn = get_connection()
+        with conn.cursor() as cursor:
+            cursor.execute(
+                "select nickname, name, age, email, user_id from users where user_id = %s or name = %s or email = %s or nickname =%s ", (user_id,name,email,nickname))
+            user = cursor.fetchone()
+            if not user :
+                return {'status':'failed', 'reason':'wrong informaion'}
+        return {'nickname':user['nickname'], 'name':user['name'], 'email':user['email'],'user_id':user['user_id'] }        
+    
+    except Exception as e:
+        return {'status': 'failed', 'reason': f'Unexpected error: {str(e)}'}
 
 @app.route('/users/<user_id>/<password>', methods = ['PUT'])
 def edit(user_id,password):
-    data = request.get_json()
-    fields = []
-    values = []
-    if 'password' in data :
-        fields.append('password = %s')
-        values.append(data['password'])
-    if 'nickname' in data:
-        fields.append("nickname = %s")
-        values.append(data['nickname'])
-    if 'name' in data:
-        fields.append("name = %s")
-        values.append(data['name'])
-    if 'age' in data:
-        fields.append("age = %s")
-        values.append(data['age'])
-    if 'email' in data:
-        fields.append("email = %s")
-        values.append(data['email'])
-    if not fields :
-        return {'status':'failed','reason':'No update'}
+    try:
+        data = request.get_json()
+        fields = []
+        values = []
+        if 'password' in data :
+            fields.append('password = %s')
+            values.append(data['password'])
+        if 'nickname' in data:
+            fields.append("nickname = %s")
+            values.append(data['nickname'])
+        if 'name' in data:
+            fields.append("name = %s")
+            values.append(data['name'])
+        if 'age' in data:
+            fields.append("age = %s")
+            values.append(data['age'])
+        if 'email' in data:
+            fields.append("email = %s")
+            values.append(data['email'])
+        if not fields :
+            return {'status':'failed','reason':'No update'}
 
-    conn = get_connection()
-    with conn.cursor() as cursor:
-        cursor.execute( "select * from users where user_id = %s and password = %s",(user_id,password))
-        user = cursor.fetchone()
+        conn = get_connection()
+        with conn.cursor() as cursor:
+            cursor.execute( "select * from users where user_id = %s and password = %s",(user_id,password))
+            user = cursor.fetchone()
 
-        if not user :
-            return {'status':'failed','reason':'Invalid user_id or password'}
-        
-        sql = f"update users set {', '.join(fields)} where user_id = %s"
-        values.append(user_id)
-        cursor.execute(sql,tuple(values))
-        conn.commit()
-    return {'status': 'success', 'message': 'User info updated'}
+            if not user :
+                return {'status':'failed','reason':'Invalid user_id or password'}
+            
+            sql = f"update users set {', '.join(fields)} where user_id = %s"
+            values.append(user_id)
+            cursor.execute(sql,tuple(values))
+            conn.commit()
+        return {'status': 'success', 'message': 'User info updated'}
+    
+    except Exception as e:
+        return {'status': 'failed', 'reason': f'Unexpected error: {str(e)}'}
 
 @app.route('/users/<user_id>/<password>', methods=['DELETE'])
 def delete(user_id, password):
-    conn = get_connection()
-    with conn.cursor() as cursor:
-        cursor.execute("SELECT * FROM users WHERE user_id = %s AND password = %s", (user_id, password))
-        user = cursor.fetchone()
-        if not user:
-            return {'status': 'failed', 'reason': 'Invalid user_id or password'}, 403
+    try:
+        conn = get_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT * FROM users WHERE user_id = %s AND password = %s", (user_id, password))
+            user = cursor.fetchone()
+            if not user:
+                return {'status': 'failed', 'reason': 'Invalid user_id or password'}, 403
 
-        cursor.execute("DELETE FROM users WHERE user_id = %s AND password = %s", (user_id, password))
-        conn.commit()
-    return {'status': 'deleted', 'message': f'User {user_id} deleted'}
-
-
+            cursor.execute("DELETE FROM users WHERE user_id = %s AND password = %s", (user_id, password))
+            conn.commit()
+        return {'status': 'deleted', 'message': f'User {user_id} deleted'}
+    except Exception as e:
+        return {'status': 'failed', 'reason': f'Unexpected error: {str(e)}'}    
 
 
 # post
@@ -282,12 +293,12 @@ def viewfollower(followee_id):
             'email': row['email']
         })
     return {'followers': follower_list}
-
+'''
 @app.route('/follow/request/<followee_id>', methods = '[POST]')
 def accpetfollow(followee_id):
     
     conn = get_connection()
     with conn.cursor() as cursor:
         cursor.execute
-
+'''
 app.run(debug=True,host = '0.0.0.0', port = 5000)
