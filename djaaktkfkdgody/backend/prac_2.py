@@ -10,6 +10,17 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # Flask 앱 인스턴스 생성함
 app = Flask(__name__)
 
+import pymysql
+def get_connection():
+    return pymysql.connect(
+        host='database-1.cts2qeeg0ot5.ap-northeast-2.rds.amazonaws.com',
+        user='pdohee',
+        password='gamzagoguma',
+        db='instagram_gamza',
+        charset='utf8mb4',
+        cursorclass=pymysql.cursors.DictCursor
+    )
+
 # 데이터 저장소 (DB 없이 파이썬 변수로만 처리함)
 users = {}  # 사용자 정보 저장. key는 닉네임, value는 user dict
 posts = []  # 게시글 저장 리스트
