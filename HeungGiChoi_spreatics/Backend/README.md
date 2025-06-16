@@ -8,7 +8,7 @@
    - nickname (string): 사용자 nickname, 필수
    - name (string): 사용자 이름, 필수
    - password (string): 비밀번호, 필수
-   - age (int, optional): 사용자 나이
+   - birthday (string): 사용자 생년월일, 필수
    - email (string, optional): 사용자 email 주소
 ~~~
 {
@@ -102,35 +102,34 @@
 ~~~
 ## 사용자 정보 수정
 1. Endpoint
-   - PUT / users / <nickname> / <password>
-     - nickname (string): 정보를 수정할 사용자의 nickname
-     - password (string): 정보를 수젇할 사용자의 password
+   - PUT / users 
 2. Request body
-   - nickname (string): 사용자 nickname, 필수
-   - name (string): 사용자 이름, 필수
-   - password (string): 비밀번호, 필수
-   - email (string, optional): 사용자 email 주소
-   - age (int, optional): 사용자 나이
+   - auth_nickname (string): 초기 인증 사용자 nickname, 필수
+   - auth_password (string): 초기 인증 사용자 password, 필수
+   - chg_nickname (string): 변경 사용자 nickname, 필수
+   - chg_password (string): 비밀번호, 필수
+   - chg_email (string, optional): 사용자 email 주소
 4. Description
-   - nickname과 password에 해당하는 사용자 계정정보를 수정한다.
-   - nickname과 password가 일치하지 않으면 수정할 수 없다.
-   - nickname과 password가 일치하면 정보를 수정하고, 수정된 정보를 저장한다.
-5. Response body
+   - 로그인 시 입력한 nickname/password와 auth_nickname/auth_password가 일치하는지 비교한다.
+   - 일치하면 해당하는 사용자 계정정보를 수정한다.
+   - 일치하지 않으면 계정정보를 수정할 수 없다.
+   - 수정한 계정정보를 서버로 넘긴다.
+6. Response body
    - status (string): updated, failed
-   - nickname (string): 수정 성공시, nickname 반환
-   - name (string): 수정 성공시, name 반환
-   - email (string): 수정 성공시, email 반환
+   - chg_nickname (string): 수정 성공시, chg_nickname 반환
+   - chg_password (string): 수정 성공 시, chg_password 반환
+   - chg_email (string): 수정 성공시, chg_email 반환
    - reason (string): 실패시, 실패 원인
 ~~~
 {
   "status": "updated",
-  "nickname": "Jun",
-  "name": "최준기",
-  "email": "pamo12@nate.com",
+  "chg_nickname": "Jun",
+  "chg_password": "54321",
+  "chg_email": "pamo12@nate.com",
 }
 {
   "status": "failed",
-  "reason": "nickname, password was unmatched"
+  "reason": "auth_nickname, auth_password was unmatched"
 }
 ~~~
 ## 사용자 삭제
@@ -138,14 +137,21 @@
    - DELETE /users/<user_id>
      - user_id (int): 삭제할 사용자 id
 2. Request body 
-   - 없음
+   - auth_nickname (string): 삭제 인증 nickname, 필수
+   - auth_password (string): 삭제 인증 password, 필수
 4. Description
    - user_id에 해당하는 사용자 계정을 삭제한다.
-   - user_id가 없으면 삭제가 실패한다.
+   - auth_nickname/auth_password를 통해 계정삭제 인증 과정을 한번 더 거친다.
+   - auth_nickname/auth_password가 로그인 시 입력한 nickname/password 과 일치하지 않으면 삭제가 실패한다.
 5. Response body
    - status (string): deleted, failed
+   - del_status (string): 삭제 성공시, 삭제 성공을 알린다.
    - reason (string): 실패시, 실패 원인
 ~~~
+{
+  "status": "deleted",
+  "del_status": "user account was deleted"
+}
 {
   "status": "failed",
   "reason": "user_id, 101 doesn't exist"
