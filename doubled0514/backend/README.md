@@ -32,7 +32,7 @@
 
 {
   "status": "failed",
-  "reason": "nickname, double_d_eo is duplicated"
+  "reason": "nickname is duplicated"
 }
 ~~~
 ## 사용자 인증 (로그인)
@@ -160,16 +160,7 @@
    - stauts : success, failed
    - post_id(int) : 성공시 post id 반환
    - reason(string) : 실패시 실패 이유
-~~~
-{
-   "status" : "success",
-   "post_id" : 1
-}
-{
-   "staus" : "failed",
-   "reason" : "you can't leave title empty"
-}
-~~~
+
 ## 올라온 포스트 조회하기
 1. Endpoint
    - GET/posts
@@ -190,11 +181,6 @@
    "title" : "덥다",
    "text" :"에어컨이 안돼서 너무 더워요"},
 {"nickname":"sinsohee", "title":"별로 안더움","text":"여름 치고는 시원한 편"} ]
-
-{
-   "status" : "failed",
-   "reason" : "cannot find posts"
-}
 ~~~
 
 ## 포스트의 코멘트 조회하기
@@ -221,7 +207,7 @@
 
 
 # 소셜
-## 다른 사용자 조회 - #사용자 의 사용자조회와 다른 기능인가?
+## 다른 사용자 조회 - #[사용자]의 사용자조회와 다른 기능인가?
 1. Endpoint
    - GET/users
 2. Request body
@@ -247,7 +233,7 @@
 4. response body
    - status (string) : pending
    - message (string) : 팔로우 신청 완료
-   - reason (string) : 실패시 이유 - 잘못된 user_id
+   - reason (string) : 실패시 이유 
      
 ## 팔로우한 목록 조회
 1. Endpoint
