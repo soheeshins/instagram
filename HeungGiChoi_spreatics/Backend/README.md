@@ -3,12 +3,12 @@
 # 사용자 계정
 ## 사용자 생성
 1. Endpoint
-   - POST /users
+   - POST /create_user
 2. Request body 
    - nickname (string): 사용자 nickname, 필수
-   - name (string): 사용자 이름, 필수
    - password (string): 비밀번호, 필수
-   - birthday (string): 사용자 생년월일, 필수
+   - name (string): 사용자 이름, 필수
+   - age (int, optional): 사용자 나이
    - email (string, optional): 사용자 email 주소
 ~~~
 {
@@ -34,7 +34,7 @@
 
 {
   "status": "failed",
-  "reason": "nickname, Choi is duplicated"
+  "reason": f'{str(e)}, The nickname is duplicated'
 }
 ~~~
 ## 사용자 인증 (로그인)
