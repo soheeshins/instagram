@@ -241,6 +241,7 @@
 2. request body
 3. description
    - user_id가 follower_id인 사용자가 팔로잉하고 있는 목록을 리스트로 조회
+   - status가 accepted인 사용자만 조회
 4. response body
    - followee_id (int)
    - nickname (string) : 팔로우 중인 유저 닉네임 조회
@@ -262,17 +263,61 @@
   
 ## 팔로우를 수락/거절
 1. Endpoint
-   - Post/follow/request/<followee_id>
+   -PUT/follow/request/<followee_id>
 2. request body
    - status(string) : 수락 or 거절
    - folower_id(int) : 팔로우 신청을 건 팔로워의 id
 3. description
    - follower_id가 user_id인 사용자에게 걸려온 팔로우 신청을 수락할지 거절할지 결정
+   - status가 pending인 상태만 
 4. response body
    - status : 성공/실패
    - reason : 실패 시 이유
    
 # 메시지
 ## DM 보내기
+1. Endpoint
+   - Post/message/<sender_id>/<receiver_id>
+2. request body
+   - text(string)
+3. description
+   - sender가 receiver에게 메시지 보냄
+4. response body
+   - message : 성공시 메시지 아이디 반환
+   - status : 성공,실패
+   - reason : 실패 이유 
 ## DM 조회하기
+1. Endpoint
+   - GET/message/<receiver_id>
+2. request body
+   - sender_id(int,opt)
+   - created_at(string,opt)
+   - message_id(int,opt)
+   - text(string,opt)
+3. description
+   - receiver_id에게 온 모든 메시지를 조회한다
+   - sender_id, message_id에 따라 조회 가능
+   - text를 포함한 메시지 조회 (가능한가? like 써서 구현)
+   - created_at으로 특정 시기부터 특정 시기까지의 메시지 조회
+4. response body
+   - sender_id
+   - created_at
+   - message_id
+   - text
+
 ## DM 삭제하기
+1. Endpoint
+   - DELETE/message/<receiver_id>
+2. request body
+   - sender_id(int,opt)
+   - message_id(int,opt)
+   - created_at(str,opt)
+   - text(string,opt)
+3. description
+   - receiver_id에게 온 모든 메시지를 삭제한다
+   - sender_id,message_id에 해당하는 메시지만 지울 수 있다
+   - created_at으로 특정 시기부터 특정 시기까지의 메시지를 삭제할 수 있다.
+   - text를 포함한 메시지 조회 (가능한가? like 써서 구현)
+4. response body
+   - status : 삭제 성공, 실패
+   - reason : 실패시 이유
