@@ -145,8 +145,66 @@
   "status": "failed",
   "reason": "User not found"
 }
+~~~
+## 사용자 삭제
+1. Endpoint
+   - DELETE /users/<user_id>
+     - user_id (int): 삭제할 사용자 id
+2. Request body 
+   - 없음
+4. Description
+   - user_id에 해당하는 사용자 계정을 삭제
+   - user_id가 없으면 삭제가 실패
+5. Response body
+   - status (string): deleted, failed
+   - reason (string): 실패시, 실패 원인
+~~~
+{
+  "status": "failed",
+  "reason": "user_id, User not found"
+}
 {
   "status": "failed",
   "reason": "Invalid password format"
 }
 ~~~
+
+# 포스팅
+## 게시글 생성
+
+1. Endpoint  
+   - POST /posts
+
+2. Request body  
+   - title (string): 게시글 제목, 필수  
+   - text (string): 게시글 본문 내용, 필수  
+   - user_id (int): 작성자 ID, 필수
+
+3. Description  
+   - 사용자가 새 게시글을 작성
+   - 요청한 `user_id`의 사용자가 작성자로 기록
+
+~~~
+{
+  "title": "오늘의 일기",
+  "text": "우래옥 웨이팅 내앞에 40팀",
+  "user_id": 105
+}
+~~~
+
+4. response body
+   - status(string) : updated, failed
+   - post_id(int) : 생성된 게시글
+   - reason(string) : 실패 원인
+   
+~~~  
+{
+  "status": "created",
+  "post_id": 101
+}
+{
+  "status": "failed",
+  "reason": "Missing required field: text"
+}
+~~~
+
