@@ -14,39 +14,73 @@ def get_connection():
 
 app = Flask(__name__)
 
+#user 생성 
 @app.route('/users', methods = ['POST'])
 def create_user():
 
     #user data 받아오기
     data = request.get_json()
     
-    user_name = data['name']
-    user_pw = data['pw']
-    user_nickname = data['nickname']
-    user_email = data['email']
-    user_age = data['age']
+    nickname = data['nickname']
+    pw = data['pw']
+    name = data['name']
+    age = data['age']
+    email = data['email']
+
+    if not nickname or not pw or not name:
+        return {
+            "status" : "failed",
+            "reason" : "nickname, password, name is mandatory."
+            }
+
 
     #sql insert data
     conn = get_connection()
 
     try:
         with conn.cursor() as cursor:
-            #중복 nickname 아니면 바로 
-            cursor.execute()
-
             sql_create = """
-            Insert into user (name, age, nickname, password, email) Values
+            Insert into users (nickname, password, name, age, email) Values
             (%s, %s, %s, %s, %s)
             """
-            cursor.execute(sql_create, (user_name, user_age, user_nickname, user_pw, user_email))
-    except IntegrityError as e:
-        if 'nickname' in e:
+            cursor.execute(sql_create, (nickname, pw, name, age, email))
+            conn.commit()
+
+            new_user_id = cursor.lastrowid
             return {
-                "status": "failed",
-                "reason": "nickname is already taken. choose a different nickname"
-                }
-        else:
-            return e
+                "status" : "success",
+                "new user id" : new_user_id
+            }
+    
+    except IntegrityError as e:
+        return {
+             "status": "failed", 
+             "reason": str(e) 
+        }
+        
+
+#user 삭제 
+@app.route ('/user_delete', methods = ['POST'])
+def user_delete():
+    data = request.get_json()
+    
+    #삭제할 계정 가져오기 
+    nickname = data['nickname']
+
+    #sql 연결
+    conn = get_connection()
+
+    with conn.cursor() as cursor: 
+        sql = """
+        Delete from users
+        where nickname = %s
+        """
+        cursor.execute(sql, (nickname,))
+        conn.commit()
+        return {
+        "status" : "user successfully deleted"
+        }
+
 
 
 #포스팅
