@@ -8,11 +8,11 @@ def get_connection():
         host='database-1.cts2qeeg0ot5.ap-northeast-2.rds.amazonaws.com',
         user='kevin',
         password='spreatics*',
-        db='instagram_kevin',
+        db='instagram_sohee',
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor
     )
-
+# 사용자 생성
 @app.route('/users', methods=['POST'])
 def create_user():
     data = request.get_json()
@@ -33,7 +33,10 @@ def create_user():
             """
             cursor.execute(sql, (nickname, name, password, age, email))
             conn.commit()
-            user_id = cursor.lastrowid
+
+            cursor.execute("SELECT user_id FROM users WHERE nickname = %s", (nickname,))
+            result = cursor.fetchone()
+            user_id = result['user_id']
 
         except pymysql.err.IntegrityError as e:
             return { "status": "failed", "reason": str(e) }
@@ -43,5 +46,32 @@ def create_user():
         "status": "created",
         "user_id": user_id
     }
+
+# 사용자 로그인
+@app.route('/users/login', methods=['POST'])
+def user_login():
+    data = request.get_json()
+    nickname = data['nickname']
+    password = data['password']
+
+    conn = get_connection()
+    with conn.cursor() as cursor:
+        sql = "SELECT user_id FROM users WHERE nickname = %s AND password = %s"
+        cursor.execute(sql, (nickname, password))
+        result = cursor.fetchone()
+        user_id = result['user_id']
+
+    conn.close()
+
+    if result:
+        return {
+            'status': 'success',
+            'user_id': user_id
+        }
+    else:
+        return {
+            'status': 'failed',
+            'reason': 'nickname or password ERROR'
+        }
 
 app.run(debug=True, host='0.0.0.0', port=5001)
