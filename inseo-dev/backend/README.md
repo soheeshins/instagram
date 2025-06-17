@@ -198,14 +198,14 @@
 1. Endpoint
    - POST /posts
 2. Request body
-   - post_title (string): 포스트 제목, 필수
-   - post_text (string): 포스트 내용, 필수
+   - title (string): 포스트 제목, 필수
+   - text (string): 포스트 내용, 필수
    - user_id(int): 작성자 user_id, 필수
 
 ```
 {
-  "post_title": "포스트 제목",
-  "post_text": "포스트 내용"
+  "title": "포스트 제목",
+  "text": "포스트 내용"
   "user_id": 105
 }
 ```
@@ -215,14 +215,17 @@
 4. Response body
    - status (string): created, failed
    - post_id (int): 생성 성공 시, post_id 반환
-   - posting_date (datetime): 생성 성공시, posting_date 반환
+   - created_at (datetime): 생성 성공시, 반환
    - reason (string): 실패 시, 실패 원인
 
 ```
 {
   "status": "created",
   "post_id": 105,
-  "posting_date": '2025-04-26 09:00:00.007'
+  "title" : "title",
+  "text" : "text",
+  "user_id" : 1,
+  "created_at": '2025-04-26 09:00:00.007'
 }
 ```
 
@@ -249,9 +252,9 @@
    - posts (array of objects):
      - post_id (int) : 조회한 포스트 id
      - user_id (int) : 조회한 포스트 작성자 id
-     - post_title (string): 포스트 제목
-     - post_text (string): 포스트 내용
-     - posting_date (datetime): 개시 날짜
+     - title (string): 포스트 제목
+     - text (string): 포스트 내용
+     - created_at (datetime): 개시 날짜
    - reason (string): 실패시, 실패 원인
 
 ```
@@ -259,9 +262,9 @@
   "status": "success",
   "posts":
   [{
-    "post_title": "this is post title",
-    "post_text": "this is post text",
-    "posting_date": "2025-04-26 09:00:00.007",
+    "title": "this is post title",
+    "text": "this is post text",
+    "created_at": "2025-04-26 09:00:00.007",
     "user_id": 1,
     "post_id": 1
   }]
@@ -292,7 +295,8 @@
      - comment_id (int): 성공시, 커맨트 id 반환
      - post_id (int): 성공시, 포스트 id 반환
      - user_id (int): 성공시, 해당 커맨트 작성 유저 id 반환
-     - comment_text (string): 성공시, 커맨트 내용 반환
+     - text (string): 성공시, 커맨트 내용 반환
+     - created_at (datetime): 성공시, 게시 날짜 반환
    - reason (string): 실패시, 실패 원인
 
 ```
@@ -303,7 +307,8 @@
     "comment_id":1,
     "post_id":105,
     "user_id":1,
-    "comment_text":"this is comment text"
+    "text":"this is comment text"
+    "created_at": "2025-04-26 09:00:00.007"
   }]
 }
 ```
@@ -322,27 +327,32 @@
      - post_id (int): 커맨트를 작성할 포스트 id
 2. Request body
    - user_id (int): 커맨트를 작성할 사용자 id, 필수
-   - comment_text (string): 커맨트 내용, 필수
+   - text (string): 커맨트 내용, 필수
 
 ```
 {
   "user_id": 1,
-  "comment_text": "커맨트 내용"
+  "text": "커맨트 내용"
 }
 ```
 
 3. Description
-   - 특정 포스트에 커맨트를 생성한다. user_id, comment_text는 필수 입력값이다.
+   - 특정 포스트에 커맨트를 생성한다. user_id, text는 필수 입력값이다.
    - post_id가 없으면 커맨트 생성을 실패한다.
 4. Response body
    - status (string): created, failed
-   - comment_id (int): 생성 성공 시, post_id 반환
+   - comments (array):
+     - comment_id (int) : 해당 comment id
+     - user_id (int) : comment 작성자 id
+     - post_id (int) : 해당 포스트 id
+     - text (string) : comment 내용
+     - created_at (datatime) : comment 게시 날짜짜
    - reason (string): 실패 시, 실패 원인
 
 ```
 {
   "status": "created",
-  "comment_id": 105,
+  "comments":{...}
 }
 ```
 
