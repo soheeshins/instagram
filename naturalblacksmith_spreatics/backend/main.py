@@ -1,19 +1,226 @@
-from flask import Flask
+from flask import Flask, request
+import pymysql
+from pymysql.err import IntegrityError
+
+def get_connection():
+    return pymysql.connect(
+        host='database-1.cts2qeeg0ot5.ap-northeast-2.rds.amazonaws.com',
+        user='kevin',
+        password='spreatics*',
+        db='insta_jiwon',
+        charset='utf8mb4',
+        cursorclass=pymysql.cursors.DictCursor
+    )
 
 app = Flask(__name__)
-@app.route('/hello')
-def hello():
-    print('hello')
-    return { 'message': 'hello' }
 
-@app.route('/hello/<name>')
-def hello_name(name):
-    print(f'hello {name}')
-    return { 'message': 'hello', 'name': name }
+#user 생성 
+@app.route('/users', methods = ['POST'])
+def create_user():
 
-@app.route('/user/<userID>')
-def userIDSet(userID):
-    print(f'user name is {userID}')
-    return { 'message': 'user', 'uswerId': userID }
+    #user data 받아오기
+    data = request.get_json()
+    
+    nickname = data['nickname']
+    pw = data['pw']
+    name = data['name']
+    age = data.get('age')
+    email = data.get('email')
+
+    if not nickname or not pw or not name:
+        return {
+            "status" : "failed",
+            "reason" : "nickname, password, name is mandatory."
+            }
+
+
+    #sql insert data
+    conn = get_connection()
+
+    try:
+        with conn.cursor() as cursor:
+            sql_create = """
+            Insert into users (nickname, password, name, age, email) Values
+            (%s, %s, %s, %s, %s)
+            """
+            cursor.execute(sql_create, (nickname, pw, name, age, email))
+            conn.commit()
+
+            new_user_id = cursor.lastrowid
+            return {
+                "status" : "success",
+                "new user id" : new_user_id
+            }
+    
+    except IntegrityError as e:
+        return {
+             "status": "failed", 
+             "reason": str(e) 
+        }
+        
+
+#user 삭제 nickname 활용
+@app.route ('/delete_nickname', methods = ['DELETE'])
+def user_delete_nickname():
+    data = request.get_json()
+    
+    #삭제할 계정 가져오기 
+    nickname = data.get('nickname')
+
+    #sql 연결
+    conn = get_connection()
+
+    with conn.cursor() as cursor: 
+        sql = """
+        Delete from users
+        where nickname = %s
+        """
+        cursor.execute(sql, (nickname,))
+        conn.commit()
+        return {
+        "status" : "user successfully deleted"
+        }
+
+#user 삭제 user_id 활용
+@app.route ('/delete_id', methods = ['DELETE'])
+def user_delete_id():
+    data = request.get_json()
+    
+    #삭제할 계정 가져오기 
+    id = data['id']
+
+    #sql 연결
+    conn = get_connection()
+
+    try:
+        with conn.cursor() as cursor:
+            #user 찾기 
+            sql_check = """
+            select * from users 
+            where user_id = %s
+            """
+            cursor.execute(sql_check, (id,))
+            rows = cursor.fetchall()
+
+            if not rows:
+                return {
+                    "error" : "user not found"
+                }
+            
+            #user 삭제 
+            sql_delete = """
+            delete from users
+            where user_id = %s
+            """
+            cursor.execute(sql_delete, (id, ))
+            conn.commit()
+        
+        return {
+            "status" : "success",
+            "deleted user" : id
+        }
+
+    except Exception as e:
+        return {
+            "status" : "failed",
+            "error" : str(e)
+        }
+
+
+#포스팅
+@app.route('/posting', methods = ['POST'])
+def create_post():
+
+    #user data 받아오기
+    data = request.get_json()
+    
+    post_title = data['title']
+    post_text= data['text']
+    user_id = data['user_id']
+
+    #sql insert data
+    conn = get_connection()
+
+    with conn.cursor() as cursor:
+
+        sql_create = """
+        Insert into post (title, post_text, posting_date, user_id) Values
+        (%s, %s, %s, %s)
+        """
+        cursor.execute(sql_create, (post_title, post_text, post_date, user_id))
+        new_post_id = cursor.lastrowid
+
+        conn.commit()
+        
+        return {
+            "status": "posting success",
+            "post_id": new_post_id
+        }
+    
+#포스팅 삭제    
+
+
+  
+
 
 app.run(debug=True, host='0.0.0.0', port=5001)
+
+
+
+# @app.route('./students/<student_id>/enrolls/<course_id>')
+# def enrollment(student_id, course_id):
+#     conn = get_connection()
+
+#     with conn.cursor() as cursor:
+#         sql = """
+#         Insert into 
+#         """
+
+#         cursor.execute(sql, ('alex', ;))
+
+# @app.route('/enrollment', methods = ['POST'])
+# def enrollment():
+
+#     data = request.get_json() #body type check (default 'text')
+#     print(data)
+
+#     student_name = data['student_name']
+#     course_name = data['course_name']
+
+#     #sql - insert
+#     return {'a': student_name, 'b': course_name}
+
+
+# @app.route('/students/<student_id>')
+# def students(student_id):
+#         # 0. connection 생성
+#         conn = get_connection()
+
+#         # 1. 커서 생성
+#         with conn.cursor() as cursor:
+
+#             # 2. SQL 실행
+#             sql = "SELECT * FROM student where student_id = %s"
+#             cursor.execute(sql, (student_id,))
+
+#             #3. 결과 가져오기
+#             rows = cursor.fetchall()
+#             return rows[0]
+
+# @app.route('/hello')
+# def hello():
+#     print('hello')
+#     return { 'message': 'hello' }
+
+# @app.route('/hello/<name>')
+# def hello_name(name):
+#     print(f'hello {name}')
+#     return { 'message': 'hello', 'name': name }
+
+# @app.route('/user/<userID>')
+# def userIDSet(userID):
+#     print(f'user name is {userID}')
+#     return { 'message': 'user', 'uswerId': userID }
+
+
+
