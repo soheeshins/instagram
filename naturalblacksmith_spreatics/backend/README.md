@@ -145,20 +145,19 @@
 ~~~
 ## 포스팅
 1. Endpoint
-    - POST /post/
-    - user_id (int): 포스팅 올리는 user_id
+    - POST /posting/create
+    - user_id: 로그인한 user_id 
 
 2. Request body
 - post title: 포스팅 제목 (required)
 - post_text: 포스팅 내용 (required)
-- posting date: 포스팅 한 날짜 (required)
 
-3. Description 
-- posting date, post_text은 필수 입력 
-- post title는 선택 
+3. Description
+- posting title, text를 입력하여 로그인한 user_id로 post 하나를 생성
 
 5. Response body
- - status: post 
+ - status: posting success, posting failed
+ - reason: 실패시, 실패 요인 
 
 # 포스팅 삭제 
 
