@@ -84,20 +84,23 @@ def login_user():
 def search_user(user_id):
     conn = get_connection()
 
-    with conn.cursor() as cursor:
-        sql = """
-        SELECT * 
-        FROM users
-        WHERE user_id = %s
-        """
-        cursor.execute(sql,(user_id,))
-        row = cursor.fetchone()
+    try:
+        with conn.cursor() as cursor:
+            sql = """
+            SELECT * 
+            FROM users
+            WHERE user_id = %s
+            """
+            cursor.execute(sql,(user_id,))
+            row = cursor.fetchone()
 
-        # 입력한 user_id 가 db에 없는 경우
-        if row is None:
-            return {"status": "failed", "reason": f"user_id, {user_id} doesn't exist."}
+            # 입력한 user_id 가 db에 없는 경우
+            if row is None:
+                return {"status": "failed", "reason": f"user_id, {user_id} doesn't exist."}
 
-        return {"status": "success", "user": row}
+            return {"status": "success", "user": row}
+    except pymysql.err.IntegrityError as e:
+            return { "status": "failed", "reason": str(e) }
 
 # 사용자 정보 수정
 @app.route('/users/<user_id>', methods = ['PUT'])
@@ -160,6 +163,179 @@ def delete_user(user_id):
             conn.commit()
 
             return {"status": "deleted"}
+
+    except pymysql.err.IntegrityError as e:
+            return { "status": "failed", "reason": str(e) }
+
+# 포스트 올리기
+@app.route('/posts', methods = ['POST'])
+def upload_post():
+    data = request.get_json()
+    title = data.get('title')
+    text = data.get('text')
+    user_id = data.get('user_id')
+
+    if title is None:
+        return {"status":"failed", "reason":"title is None."}
+    elif text is None:
+        return {"status":"failed", "reason":"text is None."}
+    elif user_id is None:
+        return {"status":"failed", "reason":"user_id is None."}
+    
+    conn = get_connection()
+    
+    try:
+        with conn.cursor() as cursor:
+            select1 = "SELECT * FROM users WHERE user_id = %s"
+            cursor.execute(select1, (user_id,))
+            row = cursor.fetchone()
+
+            if not row:
+                return {"status": "failed", "reason": f"user_id, {user_id} doesn't exist"}
+            
+            insert = """
+            INSERT INTO posts (title, text, user_id) 
+                values (%s, %s, %s)
+            """
+            cursor.execute(insert, (title, text, user_id))
+            conn.commit()
+
+            select2 = "SELECT * FROM posts WHERE user_id = %s ORDER BY created_at DESC LIMIT 1"
+            cursor.execute(select2, (user_id,))
+            row = cursor.fetchone()
+            return {"status": "created", "posts": row}
+
+    except pymysql.err.IntegrityError as e:
+            return { "status": "failed", "reason": str(e) }
+    
+# 올라온 포스트 조회하기
+@app.route('/posts')
+def search_post():
+    data = request.get_json()
+    user_id = data.get('user_id')
+    post_id = data.get('post_id')
+
+    conn = get_connection()
+
+    try:
+        with conn.cursor() as cursor:
+            # 아무정보 안보내면 전체 포스트 조회하기
+            if not user_id and not post_id: 
+                sql = """
+                SELECT * 
+                FROM posts
+                """
+                cursor.execute(sql)
+                rows = cursor.fetchall()
+                
+                return {"status": "success", "posts": rows}
+            # 포스트 id로 조회하기
+            elif not user_id:
+                sql = """
+                SELECT * 
+                FROM posts
+                WHERE post_id = %s
+                """
+                cursor.execute(sql,(post_id,))
+                rows = cursor.fetchall()
+
+                if not rows :
+                    return {"status": "success", "posts":f"post_id, {post_id} doesn't exist"}
+
+                return {"status": "success", "posts": rows}
+            # 유저 id로 조회하기
+            elif not post_id:
+                sql = """
+                SELECT * 
+                FROM posts
+                WHERE user_id = %s
+                """
+                cursor.execute(sql,(user_id,))
+                rows = cursor.fetchall()
+
+                if not rows:
+                    return {"status": "success", "posts":f"user_id, {user_id}'s posts don't exist"}
+
+                return {"status": "success", "posts": rows}
+                
+    except pymysql.err.IntegrityError as e:
+            return { "status": "failed", "reason": str(e) }
+    
+# 포스트의 커맨트 조회하기
+@app.route('/posts/<post_id>/comments')
+def search_comments(post_id):
+    conn = get_connection()
+
+    try:
+        with conn.cursor() as cursor:
+            # 조회할 post_id 가 존재하지 않는 경우
+            select = """
+            SELECT * 
+            FROM posts
+            WHERE post_id = %s
+            """
+            cursor.execute(select, (post_id,))
+            row = cursor.fetchone()
+
+            if not row:
+                return {"status":"failed", "reason":f"post_id, {post_id} doesn't exist"}
+            # comments 조회
+            select2 = """
+            SELECT *
+            FROM comments
+            WHERE post_id = %s
+            """
+            cursor.execute(select2, (post_id,))
+            rows = cursor.fetchall()
+
+            if not rows:
+                return {"status":"success", "comments":"comments is empty"}
+
+            return {"status": "success", "comments": rows}
+            
+    except pymysql.err.IntegrityError as e:
+            return { "status": "failed", "reason": str(e) }
+    
+# 특정 포스트에 커맨트 달기
+@app.route('/posts/<post_id>/comments', methods = ['POST'])
+def make_comment(post_id):
+    data = request.get_json()
+    user_id = data.get('user_id')
+    text = data.get('text')
+
+    if user_id is None:
+        return {"status":"failed", "reason":"user_id is None."}
+    elif text is None:
+        return {"status":"failed", "reason":"text is None."}
+    
+    conn = get_connection()
+    
+    try:
+        with conn.cursor() as cursor:
+            #user_id 있는지 체크
+            select1 = "SELECT * FROM users WHERE user_id = %s"
+            cursor.execute(select1, (user_id,))
+            row = cursor.fetchone()
+
+            if not row:
+                return {"status": "failed", "reason": f"user_id, {user_id} doesn't exist"}
+            #comments에 comment 추가
+            insert = """
+            INSERT INTO comments (text, user_id, post_id) 
+                values (%s, %s, %s)
+            """
+            cursor.execute(insert, (text, user_id, post_id))
+            conn.commit()
+            # 게시한 comments 리턴
+            select2 = select2 = """
+            SELECT *
+            FROM comments
+            WHERE post_id = %s && user_id = %s
+            ORDER BY created_at DESC LIMIT 1
+            """
+            cursor.execute(select2, (post_id, user_id))
+            row = cursor.fetchone()
+            return {"status": "created", "comments": row}
 
     except pymysql.err.IntegrityError as e:
             return { "status": "failed", "reason": str(e) }
