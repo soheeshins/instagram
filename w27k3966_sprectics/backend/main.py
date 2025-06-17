@@ -97,4 +97,27 @@ def get_user_info(user_id):
     
 # 사용자 정보 수정
 
+# 사용자 삭제
+@app.route('/users/<int:user_id>', methods = ['DELETE'])
+def del_user(user_id):
+    conn = get_connection()
+    with conn.cursor() as cursor:
+        cursor.execute("SELECT * FROM users WHERE user_id = %s", (user_id,))
+        result = cursor.fetchone()
+
+        if not result:
+            conn.close()
+            return {
+                "status" : "failed",
+                "reason" :"User not found"
+            }
+
+        cursor.execute("DELETE FROM users WHERE user_id = %s", (user_id,))
+        conn.commit()
+
+    conn.close()
+    return {
+        "status" : "deleted"
+    }
+
 app.run(debug=True, host='0.0.0.0', port=5001)
