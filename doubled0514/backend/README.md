@@ -145,43 +145,45 @@
    - POST/posts
 2. Request body
    - user_id(int,필수) 
-   - title(string,opt)
-   - text(string,opt)
-~~~
-{
-   "user_id" : 105
-   "title" : "덥다",
-   "text" : "에어컨이 안돼서 너무 더워요"
-}
-~~~
+   - title(string,필수)
+   - text(string,필수)
 3. Description
    - user_id 의 사용자가 포스트 작성
 4. Resopnse body
    - stauts : success, failed
    - post_id(int) : 성공시 post id 반환
+   - created_at(string) : 성공시 작성 시간 반환
    - reason(string) : 실패시 실패 이유
 
 ## 올라온 포스트 조회하기
 1. Endpoint
-   - GET/posts
+   - GET/post
 2. Request body
    - post_id(int,opt)
    - user_id(int,opt)
    - nickname(string,opt)
+   - title(string,opt) : 문자 포함된 제목 조회
+   - created_at(string,opt) : 날짜 범위로 조회
 4. descriptionn
    - 전체 포스트를 조회한다
-   - post_id, user_id, nickname에 기반해 조회할 수 있다
+   - post_id, user_id, nickname,created_at에 기반해 조회할 수 있다
 5. response body
-   - [{"nickname":nickname, "title":title, "text":text},
-      {"nickname":nickname, "title":title, "text":text}, ...]
+   - [{"nickname":nickname, "title":title, "text":text,"created_at":created_at},
+      {"nickname":nickname, "title":title, "text":text,"created_at":created_at}, ...]
    - status : success , failed
-   - reason : 실패시 실패 원인 
-~~~
-[ { "nickname" : "double_d_eo",
-   "title" : "덥다",
-   "text" :"에어컨이 안돼서 너무 더워요"},
-{"nickname":"sinsohee", "title":"별로 안더움","text":"여름 치고는 시원한 편"} ]
-~~~
+   - reason : 실패시 실패 원인
+     
+## 특정 포스트에 커멘트 달기
+1. Endpoint
+   -POST/posts/<post_id>/comment/<user_id>
+2. Request body
+   -text(string) : 커멘트
+3. Description 
+4. Response body
+   - status(string) :성공, 실패
+   - comment_id(int): 성공시 커멘트 ID 반환
+   - reason(string): 실패시 이유
+
 
 ## 포스트의 코멘트 조회하기
 1. Endpoint
@@ -189,22 +191,11 @@
 2. Request body
 3. Description
    - post_id에 대응하는 사용자의 포스트의 코멘트 조회
+   - users 테이블과 조인하여 글쓴이와 댓쓴이의 닉네임 조회
 4. Respond body
    - status (string) : 실패,성공
    - reason (string) : 실패시 이유
-   - [{"nickname":nickname(string), "comment":comment(string)},{"nickname":nickname(string), "comment":comment(string)}, ...]
-
-## 특정 포스트에 커멘트 달기
-1. Endpoint
-   -POST/posts/<post_id>/comment
-2. Request body
-   -comment(string) : 커멘트
-3. Description 
-4. Response body
-   - status(string) :성공, 실패
-   - comment_id(int): 성공시 커멘트 ID 반환
-   - reason(string): 실패시 이유
-
+   - [{"title":p.title,"text":p.text,"글쓴이":writer.nickname(string),"댓쓴이":commenter.nickname(string), "댓글":c.text},{"title":p.title,"text":p.text,"글쓴이":writer.nickname(string),"댓쓴이":commenter.nickname(string), "댓글":c.text}]
 
 # 소셜
 ## 다른 사용자 조회 - #[사용자]의 사용자조회와 다른 기능인가?
