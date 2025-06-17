@@ -65,8 +65,7 @@ def users():
             like = f"%{keyword}%"  # LIKE 쿼리용 와일드카드
             cursor.execute("SELECT user_id, nickname FROM users WHERE nickname LIKE %s OR name LIKE %s", (like, like))
             result = cursor.fetchall()
-            for user in result:
-                user['profile_image'] = "https://cdn.example.com/profiles/default.jpg"  # 기본 프로필 이미지 설정
+            
             return jsonify(result)
     finally:
         conn.close()
