@@ -168,8 +168,8 @@
    - 전체 포스트를 조회한다
    - post_id, user_id, nickname,created_at에 기반해 조회할 수 있다
 5. response body
-   - [{"nickname":nickname, "title":title, "text":text,"created_at":created_at},
-      {"nickname":nickname, "title":title, "text":text,"created_at":created_at}, ...]
+   - [{"nickname":nickname, "title":title, "text":text,"created_at":created_at,"post_id":post_id},
+      {"nickname":nickname, "title":title, "text":text,"created_at":created_at,"post_id":post_id}, ...]
    - status : success , failed
    - reason : 실패시 실패 원인
      
@@ -198,23 +198,6 @@
    - [{"title":p.title,"text":p.text,"글쓴이":writer.nickname(string),"댓쓴이":commenter.nickname(string), "댓글":c.text},{"title":p.title,"text":p.text,"글쓴이":writer.nickname(string),"댓쓴이":commenter.nickname(string), "댓글":c.text}]
 
 # 소셜
-## 다른 사용자 조회 - #[사용자]의 사용자조회와 다른 기능인가?
-1. Endpoint
-   - GET/users
-2. Request body
-   - user_id(int,opt)
-   - nickname(string,opt)
-3. Description
-   - 모든 user를 조회한다 
-   - user_id 또는 nickname으로 조회할 수 있다
-5. Response body
-   - status(string) : 성공,실패
-   - user_id
-   - nickname
-   - email
-   - age(int)
-  
-
 ## 팔로우 신청
 1. Endpoint
    - Post/follow/<follower_id>/<followee_id>
@@ -228,7 +211,7 @@
      
 ## 팔로우한 목록 조회
 1. Endpoint
-   - GEt/follow/following/<follower_id>
+   - GET/follow/following/<follower_id>
 2. request body
 3. description
    - user_id가 follower_id인 사용자가 팔로잉하고 있는 목록을 리스트로 조회
@@ -254,13 +237,14 @@
   
 ## 팔로우를 수락/거절
 1. Endpoint
-   -PUT/follow/request/<followee_id>
+   -PUT/follow/request/<followee_id>/<follower_id>
 2. request body
    - status(string) : 수락 or 거절
    - folower_id(int) : 팔로우 신청을 건 팔로워의 id
 3. description
    - follower_id가 user_id인 사용자에게 걸려온 팔로우 신청을 수락할지 거절할지 결정
-   - status가 pending인 상태만 
+   - status가 pending인 상태만
+   - 팔로우를 거절(blocked)하면 팔로우 신청이 사라진다 (다시 팔로우 걸 수 있도록)
 4. response body
    - status : 성공/실패
    - reason : 실패 시 이유
