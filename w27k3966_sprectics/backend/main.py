@@ -59,11 +59,11 @@ def user_login():
         sql = "SELECT user_id FROM users WHERE nickname = %s AND password = %s"
         cursor.execute(sql, (nickname, password))
         result = cursor.fetchone()
-        user_id = result['user_id']
 
     conn.close()
 
     if result:
+        user_id = result['user_id']
         return {
             'status': 'success',
             'user_id': user_id
@@ -73,5 +73,28 @@ def user_login():
             'status': 'failed',
             'reason': 'nickname or password ERROR'
         }
+    
+# 사용자 정보 조회
+@app.route('/users/<int:user_id>', methods=['GET'])
+def get_user_info(user_id):
+    conn = get_connection()
+    with conn.cursor() as cursor:
+        sql = "SELECT user_id, nickname, name, email FROM users WHERE user_id = %s"
+        cursor.execute(sql, (user_id,))
+        result = cursor.fetchone()
+    conn.close()
+
+    if result:
+        return {
+            "status": "success",
+            "user": result
+        }
+    else:
+        return {
+            "status": "failed",
+            "reason": "User not found"
+        }
+    
+# 사용자 정보 수정
 
 app.run(debug=True, host='0.0.0.0', port=5001)
