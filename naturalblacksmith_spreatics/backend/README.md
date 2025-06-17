@@ -36,12 +36,27 @@
   "reason": "nickname, kevin is already taken. choose a different nickname"
 }
 ~~~
-## 사용자 삭제
+## 사용자 삭제 (nickname 사용)
 1. Endpoint
-   - DELETE /users/<user_id>
-     - user_id (int): 삭제할 사용자 id
+   - DELETE /delete_nickname
 2. Request body 
-   - 없음
+   - nickname:
+4. Description
+   - nickname에 해당하는 사용자 계정을 삭제한다.
+   - nickname이 없으면 삭제가 실패한다.
+5. Response body
+   - status (string): deleted, failed
+   - reason (string): 실패시, 실패 원인
+{
+  "status": "failed",
+  "reason": "user_id, 101 doesn't exist"
+}
+
+## 사용자 삭제 (id 사용)
+1. Endpoint
+   - DELETE /delete_id
+2. Request body 
+   - id : 삭제할 사용자의 Id
 4. Description
    - user_id에 해당하는 사용자 계정을 삭제한다.
    - user_id가 없으면 삭제가 실패한다.
@@ -70,6 +85,9 @@
 
 5. Response body
  - status: post 
+
+# 포스팅 삭제 
+
 
 #코멘트
 1. Endpoint
