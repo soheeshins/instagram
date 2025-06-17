@@ -236,34 +236,38 @@ def user_delete_nickname(nickname):
 
 
 #포스팅 생성 
-@app.route('/posting/create', methods = ['POST'])
-def create_post():
+@app.route('/posting/<int:user_id>/create', methods = ['POST'])
+def create_post(user_id):
 
     #user data 받아오기
     data = request.get_json()
     
     post_title = data['title']
-    post_text= data['text']
-    user_id = data['user_id']
+    post_text= data['post_text']
 
     #sql insert data
     conn = get_connection()
 
-    with conn.cursor() as cursor:
+    try:
+        with conn.cursor() as cursor:
+            sql_create = """
+                INSERT INTO posts (title, text, user_id)
+                VALUES (%s, %s, %s)
+                """
+            cursor.execute(sql_create, (post_title, post_text, user_id))
+            new_post_id = cursor.lastrowid
+            conn.commit()
 
-        sql_create = """
-        Insert into post (title, post_text, posting_date, user_id) Values
-        (%s, %s, %s, %s)
-        """
-        cursor.execute(sql_create, (post_title, post_text, post_date, user_id))
-        new_post_id = cursor.lastrowid
+            return {
+                "status": "posting success",
+                "post_id": new_post_id
+            }
 
-        conn.commit()
-        
-        return {
-            "status": "posting success",
-            "post_id": new_post_id
-        }
+    except Exception as e:
+            return {
+                "status": "posting failed",
+                "reason": str(e)
+            }
     
 #포스팅 삭제    
 @app.route('/posting/delete', methods = ['DELETE'])
@@ -273,57 +277,63 @@ def delete_post():
     data = request.get_json()
     
     post_title = data['title']
-    post_text= data['text']
-    user_id = data['user_id']
 
     #sql insert data
     conn = get_connection()
-
-    with conn.cursor() as cursor:
-
-        sql_create = """
-        Insert into post (title, post_text, posting_date, user_id) Values
-        (%s, %s, %s, %s)
-        """
-        cursor.execute(sql_create, (post_title, post_text, post_date, user_id))
-        new_post_id = cursor.lastrowid
-
-        conn.commit()
+    try:
+        with conn.cursor() as cursor:
+            sql_create = """
+            delete from posts
+            where title = %s
+            """
+            cursor.execute(sql_create, (post_title,))
+            delete_row = cursor.rowcount
+            conn.commit()
         
+            if delete_row > 0:
+                return {
+                    "status": "posting delete success",
+                }
+            else:
+                return {
+                    "status" : "posting delete failed",
+                    "reason" : "no title was found"
+                }
+    except Exception as e:
         return {
-            "status": "posting success",
-            "post_id": new_post_id
+            "status": "posting delete failed",
+            "reason" : str(e)
         }
 
-#포스팅 내용 변경   
-@app.route('/posting/edit', methods = ['PATCH'])
-def edit_post():
+# #포스팅 내용 변경   
+# @app.route('/posting/edit/<string:edit>', methods = ['PATCH'])
+# def edit_post(edit):
 
-    #user data 받아오기
-    data = request.get_json()
+#     #user data 받아오기
+#     data = request.get_json()
     
-    post_title = data['title']
-    post_text= data['text']
-    user_id = data['user_id']
+#     post_title = data['title']
+#     post_text= data['text']
+#     user_id = data['user_id']
 
-    #sql insert data
-    conn = get_connection()
+#     #sql insert data
+#     conn = get_connection()
 
-    with conn.cursor() as cursor:
+#     with conn.cursor() as cursor:
 
-        sql_create = """
-        Insert into post (title, post_text, posting_date, user_id) Values
-        (%s, %s, %s, %s)
-        """
-        cursor.execute(sql_create, (post_title, post_text, post_date, user_id))
-        new_post_id = cursor.lastrowid
+#         sql_create = """
+#         Insert into post (title, post_text, posting_date, user_id) Values
+#         (%s, %s, %s, %s)
+#         """
+#         cursor.execute(sql_create, (post_title, post_text, post_date, user_id))
+#         new_post_id = cursor.lastrowid
 
-        conn.commit()
+#         conn.commit()
         
-        return {
-            "status": "posting success",
-            "post_id": new_post_id
-        }
+#         return {
+#             "status": "posting success",
+#             "post_id": new_post_id
+#         }
 
 
 
