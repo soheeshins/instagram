@@ -1,69 +1,65 @@
 # Flask: 웹 프레임워크
-# request: HTTP 요청 정보 접근
-# jsonify: Python 객체 → JSON 응답으로 변환
 from flask import Flask, request, jsonify
 
-# werkzeug: 보안 관련 도구 제공 (비밀번호 해싱/검증)
+# 비밀번호 해싱 및 검증을 위한 werkzeug 보안 도구
 from werkzeug.security import generate_password_hash, check_password_hash
 
-# pymysql: MySQL DB 연결용 라이브러리
+# MySQL과의 연결을 위한 라이브러리
 import pymysql
 
-# Flask 앱 생성
+# Flask 애플리케이션 인스턴스 생성
 app = Flask(__name__)
 
-# ✅ DB 연결 함수 (매번 새 연결을 만들어 사용함)
+# ✅ DB 연결 함수
 def get_connection():
+    # 매 요청마다 새 DB 연결 생성 (RDS MySQL 연결 정보 포함)
     return pymysql.connect(
         host='database-1.cts2qeeg0ot5.ap-northeast-2.rds.amazonaws.com',
         user='pdohee',
         password='gamzagoguma',
         db='instagram_gamza',
-        charset='utf8mb4',  # 한글 저장 가능
-        cursorclass=pymysql.cursors.DictCursor  # 결과를 딕셔너리 형태로 받기
+        charset='utf8mb4',
+        cursorclass=pymysql.cursors.DictCursor  # 결과를 dict로 반환
     )
 
-# ✅ 회원가입 및 사용자 검색
+# ✅ 사용자 생성 및 검색
 @app.route('/users', methods=['GET', 'POST'])
 def users():
     if request.method == 'POST':
-        # JSON 요청 본문 파싱
+        # 클라이언트에서 보낸 JSON 파싱
         data = request.get_json()
 
-        # 필수 필드가 모두 있는지 확인
+        # 필수 필드 체크
         if not all(field in data for field in ['nickname', 'name', 'password', 'email']):
-            return jsonify({"error": "Missing fields"}), 400
+            return jsonify({"status": "failed", "reason": "Missing fields"})
 
-        # DB 연결
+        # DB 연결 및 사용자 중복 확인 + 등록
         conn = get_connection()
         try:
             with conn.cursor() as cursor:
-                # 닉네임 중복 여부 확인
                 cursor.execute("SELECT * FROM users WHERE nickname=%s", (data['nickname'],))
                 if cursor.fetchone():
-                    return jsonify({"error": "Nickname already exists"}), 409
+                    return jsonify({"status": "failed", "reason": "Nickname already exists"})
 
-                # 비밀번호 암호화 후 DB에 삽입
+                # 비밀번호 해싱 후 사용자 등록
                 hashed = generate_password_hash(data['password'])
                 cursor.execute(
                     "INSERT INTO users (nickname, name, password, email) VALUES (%s, %s, %s, %s)",
                     (data['nickname'], data['name'], hashed, data['email'])
                 )
                 conn.commit()
-                return jsonify({"status": "created", "user_id": cursor.lastrowid}), 201
+                return jsonify({"status": "created", "user_id": cursor.lastrowid})
         finally:
             conn.close()
 
-    # GET: 유저 검색 기능
-    keyword = request.args.get('keyword', '')  # ?keyword=xxx
+    # GET 요청: 닉네임 또는 이름으로 사용자 검색
+    keyword = request.args.get('keyword', '')
     conn = get_connection()
     try:
         with conn.cursor() as cursor:
-            # 닉네임 또는 이름에 검색어 포함된 유저 검색
             like = f"%{keyword}%"
             cursor.execute("SELECT user_id, nickname FROM users WHERE nickname LIKE %s OR name LIKE %s", (like, like))
             result = cursor.fetchall()
-            # 기본 프로필 이미지 경로 추가
             for user in result:
                 user['profile_image'] = "https://cdn.example.com/profiles/default.jpg"
     finally:
@@ -80,17 +76,17 @@ def login():
     conn = get_connection()
     try:
         with conn.cursor() as cursor:
-            # 닉네임으로 사용자 조회
+            # 닉네임으로 사용자 검색
             cursor.execute("SELECT * FROM users WHERE nickname=%s", (nickname,))
             user = cursor.fetchone()
             if not user:
-                return jsonify({"error": "User not found"}), 404
+                return jsonify({"status": "failed", "reason": "User not found"})
 
             # 비밀번호 검증
             if check_password_hash(user['password'], password):
                 return jsonify({"status": "login success", "user_id": user['user_id'], "nickname": user['nickname']})
             else:
-                return jsonify({"error": "Invalid credentials"}), 401
+                return jsonify({"status": "failed", "reason": "Invalid credentials"})
     finally:
         conn.close()
 
@@ -101,15 +97,15 @@ def user_detail(user_id):
     try:
         with conn.cursor() as cursor:
             if request.method == 'GET':
-                # 사용자 단일 조회
+                # 특정 사용자 정보 조회
                 cursor.execute("SELECT user_id, nickname, name, email FROM users WHERE user_id=%s", (user_id,))
                 user = cursor.fetchone()
                 if user:
                     return jsonify(user)
-                return jsonify({"error": "User not found"}), 404
+                return jsonify({"status": "failed", "reason": "User not found"})
 
             elif request.method == 'PUT':
-                # 사용자 정보 업데이트
+                # 사용자 정보 수정 (입력된 항목만 수정)
                 data = request.json
                 fields = []
                 values = []
@@ -146,9 +142,9 @@ def posts():
                     (data['user_id'], data['title'], data['text'])
                 )
                 conn.commit()
-                return jsonify({"status": "post created", "post_id": cursor.lastrowid}), 201
+                return jsonify({"status": "post created", "post_id": cursor.lastrowid})
 
-            # 전체 게시물 또는 특정 유저의 게시물 조회
+            # 게시물 조회: 전체 또는 특정 사용자 기준
             user_id = request.args.get('user_id')
             if user_id:
                 cursor.execute("SELECT * FROM posts WHERE user_id=%s", (user_id,))
@@ -158,7 +154,7 @@ def posts():
     finally:
         conn.close()
 
-# ✅ 댓글 추가
+# ✅ 댓글 작성
 @app.route('/posts/<int:post_id>/comment', methods=['POST'])
 def add_comment(post_id):
     data = request.json
@@ -185,7 +181,7 @@ def get_comments(post_id):
     finally:
         conn.close()
 
-# ✅ 팔로우 요청 생성
+# ✅ 팔로우 요청 보내기
 @app.route('/follow/request', methods=['POST'])
 def follow_request():
     data = request.json
@@ -195,7 +191,7 @@ def follow_request():
     conn = get_connection()
     try:
         with conn.cursor() as cursor:
-            # 이미 팔로우 요청 중인지 확인
+            # 이미 팔로우 요청이 있는지 확인
             cursor.execute("SELECT * FROM follows WHERE follower_id=%s AND followee_id=%s", (follower_id, followee_id))
             if cursor.fetchone():
                 return jsonify({"status": "already_requested_or_following"})
@@ -207,7 +203,7 @@ def follow_request():
     finally:
         conn.close()
 
-# ✅ 받은 팔로우 요청 목록 조회
+# ✅ 내가 받은 팔로우 요청 목록 조회
 @app.route('/follow/requests', methods=['GET'])
 def get_follow_requests():
     user_id = int(request.args.get('user_id'))
@@ -228,7 +224,7 @@ def get_follow_requests():
     finally:
         conn.close()
 
-# ✅ 팔로우 요청 수락/거절
+# ✅ 팔로우 요청 수락 / 거절
 @app.route('/follow/respond', methods=['POST'])
 def follow_respond():
     data = request.json
@@ -247,11 +243,11 @@ def follow_respond():
                 conn.commit()
                 return jsonify({"status": "rejected"})
             else:
-                return jsonify({"status": "failed", "reason": "invalid action"}), 400
+                return jsonify({"status": "failed", "reason": "invalid action"})
     finally:
         conn.close()
 
-# ✅ 내가 팔로우한 사람 목록
+# ✅ 내가 팔로우한 사용자 목록
 @app.route('/follow/list', methods=['GET'])
 def get_following():
     user_id = int(request.args.get('user_id'))
@@ -272,11 +268,10 @@ def get_following():
     finally:
         conn.close()
 
-# ✅ DM 전송
+# ✅ DM 보내기
 @app.route('/dm', methods=['POST'])
 def send_dm():
     data = request.json
-
     conn = get_connection()
     try:
         with conn.cursor() as cursor:
@@ -289,7 +284,7 @@ def send_dm():
     finally:
         conn.close()
 
-# ✅ DM 대화 조회
+# ✅ 특정 사용자 간 DM 대화 조회
 @app.route('/dm/conversation', methods=['GET'])
 def get_dm_conversation():
     uid1 = int(request.args.get("user1_id"))
