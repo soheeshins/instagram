@@ -1,18 +1,8 @@
-from flask import Flask
-
-app = Flask(__name__)
-
-
-@app.route('/hello')
-def hello():
-    print('hello')
-    return {'message': 'hello'}
-
-
-@app.route('/hello/<name>')
-def hello_name(name):
-    print(f'hello {name}')
-    return {'message': 'hello', 'name': name}
+from flask import Flask, request, jsonify
+import json
+import traceback
+import pymysql
+import bcrypt
 
 
 # # 사용자 생성
@@ -40,105 +30,87 @@ def hello_name(name):
 # }
 # ~~~
 
-# 3. Description
-# - 새로운 사용자 계정을 생성한다.
+# CREATE TABLE users(
+# 	user_id INT PRIMARY KEY AUTO_INCREMENT,
+# 	nickname VARCHAR(50) UNIQUE NOT NULL,
+# 	password VARCHAR(255) NOT NULL,
+# 	name VARCHAR(50) NOT NULL,
+# 	age INT,
+# 	email VARCHAR(50)
+# )
 
-# - nickname, name, password는 반드시 입력해야 하며, 중복된 nickname이 있을 경우 생성에 실패한다.
 
-# 4. Response body
+# 타입을 먼저 json으로 바꿔주고
 
-# - status(string): "created" 또는 "failed"
 
-# - user_no(int): 생성 성공 시 사용자 고유 번호
+app = Flask(__name__)
 
-# - reason(string): 실패 시 원인
 
-# ~~~json
-# // 성공
-# {
-#     "status": "created",
-#     "user_no": 105
-# }
-
-# // 실패
-# {
-#     "status": "failed",
-#     "reason": "nickname 'charles' is already taken"
-# }
-# ~~~
+def get_connection():
+    with open('connect_data.json', encoding='utf-8') as f:
+        config = json.load(f)
+        cd = config['connect_data']
+    return pymysql.connect(
+        host=cd['host'],
+        user=cd['user'],
+        password=cd['password'],
+        db=cd['db'],
+        charset=cd.get('charset', 'utf8mb4'),
+        cursorclass=pymysql.cursors.DictCursor    # ← 클래스 객체로 지정
+    )
 
 
 @app.route('/users', methods=['POST'])
-def make_id():
-    nickname = input('nickname: ')
-    name = input('name: ')
-    password = input('password: ')
-    email = input('email: ')
-    age = int(input('age: '))
-    # user_no = None
-    print(
-        f'nickname: {nickname}, name: {name}, password: {password}, email: {email}, age: {age}')
-    input('is this correct? (Press y to continue, any other key to cancel): ')
-    if input() != 'y':
-        return {
-            "status": "failed",
-            "reason": "User creation cancelled by user."
-        }
+def create_user():
+    # 1. Content-Type 체크 (클라이언트가 application/json 으로 보냈는지)
+    if not request.is_json:
+        return jsonify({'error': 'Content-Type must be application/json'}), 415
 
-    # for i in range(1, 100):
-    #     if not is_user_exists(i):
-    #         user_no = i
-    #         break
-    # try:
-    #     if not nickname or not name or not password or not email or not age:
-    #         raise ValueError(
-    #             "nickname, name, password, email, and age are required fields.")
-    #     if not isinstance(age, int) or age < 0:
-    #         raise ValueError("age must be a non-negative integer.")
-    #     if not isinstance(nickname, str) or not isinstance(name, str) or not isinstance(password, str):
-    #         raise ValueError("nickname, name, and password must be strings.")
-    #     if len(nickname) < 3 or len(nickname) > 20:
-    #         raise ValueError(
-    #             "nickname must be between 3 and 20 characters long.")
-    #     if len(name) < 1 or len(name) > 50:
-    #         raise ValueError("name must be between 1 and 50 characters long.")
-    #     if len(password) < 6 or len(password) > 20:
-    #         raise ValueError(
-    #             "password must be between 6 and 20 characters long.")
-    #     if email and not isinstance(email, str):
-    #         raise ValueError("email must be a string if provided.")
+    # 2. JSON 파싱
+    data = request.get_json()
+    nickname = data.get('nickname')
+    name = data.get('name')
+    password = data.get('password')
+    age = data.get('age')    # optional
+    email = data.get('email')  # optional
 
-    # 중복된 nickname 체크 로직 (예: 데이터베이스 조회)
-    # if is_nickname_taken(nickname):
-    #     raise ValueError(f"nickname '{nickname}' is already taken")
+    # 3. 필수 값 검증
+    if not nickname or not name or not password:
+        return jsonify({'error': 'Nickname, name, and password are required.'}), 400
 
-#     except ValueError as e:
-#         return {
-#             "status": "failed",
-#             "reason": str(e)
-#         }
-    insert_user = create_user(nickname, name, password, email, age)
+    # 4. 비밀번호 해싱
+    hashed_pw = bcrypt.hashpw(password.encode(
+        'utf-8'), bcrypt.gensalt()).decode('utf-8')
 
-    if insert_user:
-        return {
-            "nickname": nickname,
-            "name": name,
-            "password": password,
-            "email": email,
-            "age": age,
-            # "user_no": user_no,
-            "status": "created"
-        }
-    else:
-        return {
-            "status": "failed",
-            "reason": 'nickname is already taken'
-        }
+    # 5. DB에 저장
+    conn = get_connection()
+    try:
+        with conn.cursor() as cursor:
+            sql = """
+            INSERT INTO users (nickname, name, password, age, email)
+            VALUES (%s, %s, %s, %s, %s)
+            """
+            cursor.execute(sql, (nickname, name, hashed_pw, age, email))
+        conn.commit()
+        user_id = cursor.lastrowid
+    except pymysql.err.IntegrityError as ie:
+        # 닉네임 중복 등 UNIQUE 위반
+        return jsonify({'error': 'Nickname already exists.'}), 409
+    except Exception as e:
+        traceback.print_exc()
+
+        return jsonify({'error': str(e)}), 500
+
+    finally:
+        conn.close()
+
+    # 6. 생성 성공 응답
+    return jsonify({
+        'status':   'created',
+        'user_id':  user_id,
+        'nickname': nickname
+    }), 201
 
 
-def create_user(nickname, name, password, email=None, age=None):
-    # 사용자 생성 로직 (예: 데이터베이스에 저장)
-    pass
-
-
-app.run(debug=True, host='0.0.0.0', port=5000)
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)
