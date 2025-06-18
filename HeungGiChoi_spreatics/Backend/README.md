@@ -39,7 +39,7 @@
 ~~~
 ## 사용자 인증 (로그인)
 1. Endpoint
-   - GET / Auth_users
+   - POST / Auth_users
 2. Request body 
    - nickname (string): 사용자 nickname, 필수
    - password (string): 비밀번호, 필수
