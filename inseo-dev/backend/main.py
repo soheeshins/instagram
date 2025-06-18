@@ -59,6 +59,7 @@ def login_user():
     # 로그인 중복 방지
     if 'user_id' in session:
         return {"status": "failed", "reason": "Already logged in."}
+    
     data = request.get_json()
     nickname = data.get('nickname')
     password = data.get('password')
@@ -68,7 +69,7 @@ def login_user():
     elif password is None:
         return {"status":"failed", "reason":"password is None."}
     
-    conn = get_connection
+    conn = get_connection()
     
     try:
         with conn.cursor() as cursor:
