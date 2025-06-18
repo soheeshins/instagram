@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, session
 import pymysql
 from datetime import datetime
 
@@ -13,6 +13,10 @@ def get_connection():
     )
 
 app = Flask(__name__)
+
+# 세션 암호키
+app.secret_key = 'abc1234'
+
 # 사용자 생성
 @app.route('/users', methods=['POST'])
 def create_user():
@@ -52,6 +56,9 @@ def create_user():
 # 사용자 인증(로그인)
 @app.route('/users/login', methods = ['POST'])
 def login_user():
+    # 로그인 중복 방지
+    if 'user_id' in session:
+        return {"status": "failed", "reason": "Already logged in."}
     data = request.get_json()
     nickname = data.get('nickname')
     password = data.get('password')
@@ -72,39 +79,78 @@ def login_user():
             if not row:
                 return {"status": "failed", "reason": f"nickname, {nickname} doesn't exist"}
             if row['password'] == password:
-                return {"status": "success", "user_id": row['user_id']}
+                #이미 로그인 되어있으면 거부
+                if 'user_id' in session:
+                    return {"status": "failed", "reason": "Already logged in"}
+                #세션에 user id 저장
+                session['user_id'] = row['user_id']
+                return {"status": "success", "user_id": row['user_id'], "login":"login complete."}
             else:
                 return {"status": "failed", "reason": "password, password doesn't match"}
 
     except pymysql.err.IntegrityError as e:
             return { "status": "failed", "reason": str(e) }
+# 로그아웃
+@app.route('/users/logout', methods=['POST'])
+def logout():
+    if 'user_id' not in session:
+        return {"status": "failed", "reason": "Not currently logged in"}
+    # 세션에서 정보 삭제
+    session.pop('user_id', None)
+    return {"status": "success", "logout":"logout complete."}
 
-# 특정 사용자 조회
-@app.route('/users/<user_id>')
-def search_user(user_id):
+# 사용자 조회
+@app.route('/users')
+def search_user():
+    data = request.get_json(silent=True) or {}
+    search = data.get('search')
+
     conn = get_connection()
 
     try:
         with conn.cursor() as cursor:
-            sql = """
-            SELECT * 
-            FROM users
-            WHERE user_id = %s
-            """
-            cursor.execute(sql,(user_id,))
-            row = cursor.fetchone()
+            # 아무정보 입력안하면 전체 유저 검색
+            if not search:
+                sql = """
+                SELECT * 
+                FROM users
+                """
+                cursor.execute(sql)
+                rows = cursor.fetchall()
 
-            # 입력한 user_id 가 db에 없는 경우
-            if row is None:
-                return {"status": "failed", "reason": f"user_id, {user_id} doesn't exist."}
+                if not rows:
+                    return {"status": "success", "users": "no search results."}
+                
+                return {"status": "success", "user": rows}
+            # 검색어에 해당하는 nickname 이나 name 검색색
+            elif search:
+                sql = """
+                SELECT * 
+                FROM users
+                WHERE nickname LIKE %s || name LIKE %s
+                """
+                cursor.execute(sql,('%'+search+'%','%'+search+'%'))
+                rows = cursor.fetchall()
 
-            return {"status": "success", "user": row}
+                if not rows:
+                    return {"status": "success", "users": "no search results."}
+                
+                return {"status": "success", "user": rows}
+
     except pymysql.err.IntegrityError as e:
             return { "status": "failed", "reason": str(e) }
 
 # 사용자 정보 수정
 @app.route('/users/<user_id>', methods = ['PUT'])
 def update_user(user_id):
+    session_user_id = session.get('user_id')
+    # 로그인 해야 접근가능
+    if session_user_id is None:
+        return {"status": "failed", "reason": "Login required."}
+    # url user_id와 세션 user_id가 다르면 권한 없음
+    if session_user_id != user_id:
+        return {"status": "failed", "reason": "Permission denied."}
+
     data = request.get_json()
     nickname = data.get('nickname')
     name = data.get('name')
@@ -148,7 +194,16 @@ def update_user(user_id):
 # 사용자 삭제
 @app.route('/users/<user_id>', methods = ['DELETE'])
 def delete_user(user_id):
+    session_user_id = session.get('user_id')
+    # 로그인 해야 접근가능
+    if session_user_id is None:
+        return {"status": "failed", "reason": "Login required."}
+    # url user_id와 세션 user_id가 다르면 권한 없음
+    if session_user_id != user_id:
+        return {"status": "failed", "reason": "Permission denied."}
+    
     conn = get_connection()
+
     try:
         with conn.cursor() as cursor:
             select = "SELECT * FROM users WHERE user_id = %s"
@@ -170,10 +225,14 @@ def delete_user(user_id):
 # 포스트 올리기
 @app.route('/posts', methods = ['POST'])
 def upload_post():
+    user_id = session.get('user_id')
+    # 로그인 해야 접근가능
+    if user_id is None:
+        return {"status": "failed", "reason": "Login required."}
+    
     data = request.get_json()
     title = data.get('title')
     text = data.get('text')
-    user_id = data.get('user_id')
 
     if title is None:
         return {"status":"failed", "reason":"title is None."}
@@ -211,7 +270,7 @@ def upload_post():
 # 올라온 포스트 조회하기
 @app.route('/posts')
 def search_post():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     user_id = data.get('user_id')
     post_id = data.get('post_id')
 
@@ -299,13 +358,15 @@ def search_comments(post_id):
 # 특정 포스트에 커맨트 달기
 @app.route('/posts/<post_id>/comments', methods = ['POST'])
 def make_comment(post_id):
+    user_id = session.get('user_id')
+    # 로그인 해야 접근가능
+    if user_id is None:
+        return {"status": "failed", "reason": "Login required."}
+    
     data = request.get_json()
-    user_id = data.get('user_id')
     text = data.get('text')
 
-    if user_id is None:
-        return {"status":"failed", "reason":"user_id is None."}
-    elif text is None:
+    if text is None:
         return {"status":"failed", "reason":"text is None."}
     
     conn = get_connection()
@@ -339,6 +400,5 @@ def make_comment(post_id):
 
     except pymysql.err.IntegrityError as e:
             return { "status": "failed", "reason": str(e) }
-
 
 app.run(debug=True, host='0.0.0.0', port=5000)
