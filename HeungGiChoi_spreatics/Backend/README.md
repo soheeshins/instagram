@@ -39,7 +39,7 @@
 ~~~
 ## 사용자 인증 (로그인)
 1. Endpoint
-   - GET / users / Auth_users
+   - GET / Auth_users
 2. Request body 
    - nickname (string): 사용자 nickname, 필수
    - password (string): 비밀번호, 필수
@@ -51,21 +51,20 @@
 ~~~
 4. Description
    - 사용자가 로그인한다. nickname과 password를 필수로 입력해야한다.
-   - nickname은 고유한 값이며, nickname과 password가 일치해야 한다.
-   - nickname과 password가 초기에 생성한 값이 아닐 경우, 로그인이 실패한다.
-   - 로그인 성공시 user_id 같이 반환. 이후 다른 API 호출 시, 그 user_id 사용한다.
+   - nickname과 password가 일치하면 로그인에 성공한다.
+   - nickname과 password가 일치하지 않으면 로그인에 실패한다.
 6. Response body
-   - status (string): log_in, failed
+   - status (string): log_in Success, log_in failed
    - user_id (int): 로그인 성공시, user_id 반환
    - reason (string): 실패 시, 실패 원인
 ~~~
 {
-  "status": "log_in",
+  "status": "log_in Success",
   "user_id": "105"
 }
 
 {
-  "status": "failed",
+  "status": "log_in failed",
   "reason": "nickname, password unmatched"
 }
 ~~~

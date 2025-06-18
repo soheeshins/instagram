@@ -12,7 +12,7 @@ def get_connetion():
     )
 
 app = Flask(__name__)
-@app.route('/Auth_users')
+@app.route('/Auth_users', methods=['POST'])
 def authenticatioin_user():
     data = request.get_json()
 
