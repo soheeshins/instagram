@@ -101,7 +101,7 @@ def logout():
     return {"status": "success", "logout":"logout complete."}
 
 # 사용자 조회
-@app.route('/users')
+@app.route('/users/search', methods = ["GET", "POST"])
 def search_user():
     data = request.get_json(silent=True) or {}
     search = data.get('search')
