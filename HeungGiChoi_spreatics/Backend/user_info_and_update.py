@@ -39,23 +39,11 @@ def update_info(user_id):
     auth_nickname = data.get('auth_nickname')
     auth_password = data.get('auth_password')
 
-    if data.get('chg_nickname'):
-        chg_nickname = data.get('chg_nickname')
-    else:
-        chg_nickname = new_info.get('nickname')
-
-    if data.get('chg_password'):
-        chg_password = data.get('chg_password')
-    else:
-        chg_password = new_info.get('password')
-    
-    if data.get('chg_email'):
-        chg_email = data.get('chg_email')
-    else:
-        chg_email = new_info.get('email')
-
     if((auth_nickname is None) or (auth_password is None)):
         return {"status": "failed", "reason": "You will need to re-authenticate to edit your information."}
+    
+    for key_1, value_1 in data.items():
+        new_info[key_1] = value_1
     
     conn = get_connection()
 
@@ -71,10 +59,10 @@ def update_info(user_id):
             sql_2 = """update users
                         set nickname = %s, password = %s, email = %s
                         where user_id = %s;"""
-            cursor.execute(sql_2, (chg_nickname, chg_password, chg_email, user_id))
+            cursor.execute(sql_2, (new_info['nickname'], new_info['password'], new_info['email'], user_id))
             conn.commit()
-            return {"status": "Update", "chg_nickname": chg_nickname, "chg_password": chg_password, "chg_email": chg_email}
+            return {"status": "Update", "chg_nickname": new_info['nickname'], "chg_password": new_info['password'], "chg_email": new_info['email']}
         elif len(rows) == 0:
             return {"status": "failed", "reason": "auth_nickname, auth_password was unmatched"}
         
-app.run(debug=True, host='0.0.0.0', port=5000)    
+app.run(debug=True, host='0.0.0.0', port=5000)
