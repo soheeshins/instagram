@@ -76,9 +76,8 @@
    - 없음
 4. Description
    - user_id에 해당하는 사용자 계정 정보를 조회한다.
-   - user_id가 일치하지 않으면 계정정보 조회가 실패한다.
 5. Response body
-   - status (string): selected, failed
+   - status (string): selected
    - user_id (int): 조회 성공시, user_id 반환
    - nickname (string): 조회 성공시, nickname 반환
    - name (string): 조회 성공시, name 반환
@@ -94,25 +93,21 @@
   "email": "pamo23@naver.com"
   "age": 32,
 }
-{
-  "status": "failed",
-  "reason": "user_id, 105 doesn't exist"
-}
 ~~~
 ## 사용자 정보 수정
 1. Endpoint
-   - PUT / users 
+   - PUT / user_update / <user_id>
+    - user_id : 정보를 수정할 사용자 id
 2. Request body
    - auth_nickname (string): 초기 인증 사용자 nickname, 필수
    - auth_password (string): 초기 인증 사용자 password, 필수
-   - chg_nickname (string): 변경 사용자 nickname, 필수
-   - chg_password (string): 비밀번호, 필수
+   - chg_nickname (string): 변경 사용자 nickname
+   - chg_password (string): 비밀번호
    - chg_email (string, optional): 사용자 email 주소
 4. Description
    - 로그인 시 입력한 nickname/password와 auth_nickname/auth_password가 일치하는지 비교한다.
    - 일치하면 해당하는 사용자 계정정보를 수정한다.
    - 일치하지 않으면 계정정보를 수정할 수 없다.
-   - 수정한 계정정보를 서버로 넘긴다.
 6. Response body
    - status (string): updated, failed
    - chg_nickname (string): 수정 성공시, chg_nickname 반환
@@ -144,16 +139,16 @@
    - auth_nickname/auth_password가 로그인 시 입력한 nickname/password 과 일치하지 않으면 삭제가 실패한다.
 5. Response body
    - status (string): deleted, failed
-   - del_status (string): 삭제 성공시, 삭제 성공을 알린다.
+   - result (string): 삭제 성공시, 삭제 성공을 알린다.
    - reason (string): 실패시, 실패 원인
 ~~~
 {
   "status": "deleted",
-  "del_status": "user account was deleted"
+  "result": "user account was deleted"
 }
 {
   "status": "failed",
-  "reason": "user_id, 101 doesn't exist"
+  "reason": "auth_nickname, auth_password was unmatched"
 }
 ~~~
 # 포스팅
