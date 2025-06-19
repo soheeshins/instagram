@@ -312,7 +312,7 @@ def delete_post():
     #user data 받아오기
     data = request.get_json()
     
-    post_title = data['title']
+    post_id = data['post_id']
 
     #sql insert data
     conn = get_connection()
@@ -320,9 +320,9 @@ def delete_post():
         with conn.cursor() as cursor:
             sql_create = """
             delete from posts
-            where title = %s
+            where post_id = %s
             """
-            cursor.execute(sql_create, (post_title,))
+            cursor.execute(sql_create, (post_id,))
             delete_row = cursor.rowcount
             conn.commit()
         
