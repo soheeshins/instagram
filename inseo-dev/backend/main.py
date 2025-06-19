@@ -101,7 +101,7 @@ def logout():
     return {"status": "success", "logout":"logout complete."}
 
 # 사용자 조회
-@app.route('/users')
+@app.route('/users/search', methods = ["GET", "POST"])
 def search_user():
     data = request.get_json(silent=True) or {}
     search = data.get('search')
@@ -113,7 +113,7 @@ def search_user():
             # 아무정보 입력안하면 전체 유저 검색
             if not search:
                 sql = """
-                SELECT * 
+                SELECT age, email, name, nickname, user_id
                 FROM users
                 """
                 cursor.execute(sql)
@@ -123,12 +123,12 @@ def search_user():
                     return {"status": "success", "users": "no search results."}
                 
                 return {"status": "success", "user": rows}
-            # 검색어에 해당하는 nickname 이나 name 검색색
+            # 검색어에 해당하는 nickname 이나 name 검색
             elif search:
                 sql = """
-                SELECT * 
+                SELECT age, email, name, nickname, user_id
                 FROM users
-                WHERE nickname LIKE %s || name LIKE %s
+                WHERE nickname LIKE %s OR name LIKE %s
                 """
                 cursor.execute(sql,('%'+search+'%','%'+search+'%'))
                 rows = cursor.fetchall()
@@ -153,15 +153,9 @@ def update_user(user_id):
         return {"status": "failed", "reason": "Permission denied."}
 
     data = request.get_json()
-    nickname = data.get('nickname')
-    name = data.get('name')
-    password = data.get('password')
-    age = data.get('age')
-    email = data.get('email')
-
     conn = get_connection()
 
-    with conn.cursor() as cursor:
+    with conn.cursor(pymysql.cursors.DictCursor) as cursor:
         try:
             sql_select = """
             SELECT *
@@ -170,24 +164,35 @@ def update_user(user_id):
             """
             cursor.execute(sql_select,(user_id,))
             row = cursor.fetchone()
-
+            
             # 입력한 user_id 가 db에 없는 경우
             if row is None:
                 return {"status": "failed", "reason": f"user_id, {user_id} doesn't exist."}
 
+            # 사용자가 입력하지 않으면 기존 값 유지
+            nickname = data.get('nickname') or row['nickname']
+            name = data.get('name') or row['name']
+            password = data.get('password') or row['password']
+            age = data.get('age') or row['age']
+            email = data.get('email') or row['email']
+
             sql_update = """
-            UPDATE users SET nickname = %s, name = %s, password = %s, age = %s, email = %s WHERE user_id = %s
+            UPDATE users 
+            SET nickname = %s, name = %s, password = %s, age = %s, email = %s 
+            WHERE user_id = %s
             """
             cursor.execute(sql_update, (nickname, name, password, age, email,user_id))
             conn.commit()
             
-            row['nickname'] = nickname
-            row['name'] = name
-            row['password'] = password
-            row['age'] = age
-            row['email'] = email
+            updated_user = {
+                "user_id": user_id,
+                "nickname": nickname,
+                "name": name,
+                "age": age,
+                "email": email
+            }
             
-            return {"status":"success", "user":row}
+            return {"status":"success", "user":updated_user}
 
         except pymysql.err.IntegrityError as e:
             return { "status": "failed", "reason": str(e) }

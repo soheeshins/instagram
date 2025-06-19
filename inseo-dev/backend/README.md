@@ -121,9 +121,9 @@
 ## 사용자 정보 조회
 
 1. Endpoint
-   - GET /users
+   - GET,POST /users/search
 2. Request body
-   - search (string) : 검색할 닉네임 혹은 이름름
+   - search (string) : 검색할 닉네임 혹은 이름
 3. Description
    - search에 해당하는 사용자 계정을 조회한다.
    - search가 없으면 전체 사용자 조회한다.
