@@ -340,6 +340,45 @@ def delete_post():
             "status": "posting delete failed",
             "reason" : str(e)
         }
+@app.route('/posting/check', methods = ['GET'])
+def post_check():
+
+    conn = get_connection()
+
+    try:
+        with conn.cursor() as cursor:
+            sql = """
+            Select * 
+            from posts 
+            """
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+            conn.commit()
+
+            if rows:
+                results = []
+                for row in rows:
+                    results.append({
+                        "status" : "post get success",
+                        "title" : row["title"],
+                        "text" : row["text"],
+                        "user_id" : row["user_id"]
+                    }) 
+                return {
+                    "status" : "post get success",
+                    "result" : results
+                }  
+            else:
+                return {
+                     "status" : "post get failed",
+                    "reason" : "post not found"
+                }
+
+    except Exception as e:
+        return {
+            "status" : "user get failed",
+            "reason" : str(e)
+        }
 
 # #포스팅 내용 변경   
 # @app.route('/posting/edit/<string:edit>', methods = ['PATCH'])
