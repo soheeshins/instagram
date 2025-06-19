@@ -49,7 +49,7 @@ def create_user():
             new_user_id = cursor.lastrowid
             return {
                 "status" : "user create success",
-                "new user id" : new_user_id
+                "new user id1" : new_user_id
             }
     
     except IntegrityError as e:
