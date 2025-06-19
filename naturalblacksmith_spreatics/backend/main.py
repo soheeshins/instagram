@@ -151,6 +151,42 @@ def change_pw(user_id):
                 "status" : "password change failed",
                 "reason" : "incorrect password"
             }
+        
+@app.route('/user/check', methods = ['GET'])
+def user_check():
+
+    user_id = request.args.get("user_id")
+
+    conn = get_connection()
+
+    try:
+        with conn.cursor() as cursor:
+            sql = """
+            Select nickname, password, name 
+            from users 
+            where user_id = %s"""
+            cursor.execute(sql, (user_id,))
+            user = cursor.fetchone()
+            conn.commit()
+
+            if user:
+                return {
+                    "status" : "user get success",
+                    "nickname" : user["nickname"],
+                    "password" : user["password"],
+                    "name" : user["name"]
+                }
+            else:
+                return {
+                    "status" : "user get failed",
+                    "reason" : "user not found"
+                }
+
+    except Exception as e:
+        return {
+            "status" : "user get failed",
+            "reason" : str(e)
+        }
 
 #user 삭제 user_id 활용
 @app.route ('/user/<int:user_id>/delete', methods = ['DELETE'])
