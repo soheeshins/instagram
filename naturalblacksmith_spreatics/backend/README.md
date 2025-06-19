@@ -160,7 +160,33 @@
  - reason: 실패시, 실패 요인 
 
 # 포스팅 삭제 
+1. Endpoint
+    - DELETE /posting/delete
+    - post_id: 삭제할 포스팅 id
 
+2. Request body
+- post_id: 포스팅 id (required)
+
+3. Description
+- posting id를 입력하여 해당 게시글을 삭제 
+
+5. Response body
+ - status: posting delete success, posting delete failed
+ - reason: 실패시, 실패 요인 
+
+# 포스팅 전체 조회 
+1. Endpoint
+    - GET /posting/check
+
+2. Request body
+- 없음
+
+3. Description
+- 현재 posts에 있는 모든 내용을 체크
+
+5. Response body
+ - status: posting check success, posting check failed
+ - result: 모든 포스팅 row 출력 
 
 #코멘트
 1. Endpoint
