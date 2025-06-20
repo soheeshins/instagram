@@ -5,6 +5,25 @@
 using namespace std;
 //using namespace httplib;
 //using namespace nlohmann;
+
+void login();
+void sign_up();
+void login_menu();
+void home_menu();     
+void me_menu();        
+void logout();
+void check_me();
+void update_me();
+void delete_me();
+void check_my_posts();
+void check_my_comments();
+void upload_post();
+void post_list();
+void choose_post();
+void write_comment();
+void comment_list();
+void search_user();
+void search_post();
 /*
 void search_user(string search=""){
     Client cli("127.0.0.1:5000");
@@ -46,43 +65,220 @@ int main() {
     return 0;
 }
     */
+string user_input;
+
 void login(){
-    cout << "ë¡œê·¸ì¸ ì™„ë£Œ" << endl;
+    cout << "·Î±×ÀÎ ¿Ï·á" << endl << endl;
 }
 void sign_up(){
-    cout <<"íšŒì›ê°€ìž… ì™„ë£Œ" << endl;
+    cout <<"È¸¿ø°¡ÀÔ ¿Ï·á" << endl << endl;
 }
-void first_menu(string user_input = ""){
-    while(user_input != "ë¡œê·¸ì¸" && user_input != "íšŒì›ê°€ìž…"){
-        cout << "[ë©”ì¸ë©”ë‰´]" << endl;
-        cout << "ë¡œê·¸ì¸ / íšŒì›ê°€ìž…" << endl;
-        cout << "ì´ìš©í•  ì„œë¹„ìŠ¤ë¥¼ ìž…ë ¥í•˜ì„¸ìš”. : ";
-        cin >> user_input;
-        cout << user_input << endl;
+void login_menu(){
+    user_input = "";
+    while(1){
+        cout << "[·Î±×ÀÎ ¸Þ´º]" << endl;
+        cout << "| ·Î±×ÀÎ | È¸¿ø°¡ÀÔ |" << endl << endl;;
+        cout << "ÀÌ¿ëÇÒ ¼­ºñ½º¸¦ ÀÔ·ÂÇÏ¼¼¿ä. : ";
+        getline(cin, user_input);
         cout << endl;
-    }
-    if(user_input == "ë¡œê·¸ì¸")
-        login();
-    else if(user_input == "íšŒì›ê°€ìž…")
-        sign_up();
+
+        if(user_input == "·Î±×ÀÎ"){
+            login();
+            home_menu();
+            if(user_input == "Á¾·á"){
+                break;
+            }
+        }
+        else if(user_input == "È¸¿ø°¡ÀÔ"){
+            sign_up();
+        }
+    }   
 }
-void logout(){}
-void check_me(){}
-void update_me(){}
-void delete_me(){}
-void check_my_posts(){}
-void check_my_comments(){}
-void upload_post(){}
-void post_list(){}
-void choose_post(){} 
-void write_comment(){}
-void search_user(){}
-void search_post(){}
+void me_menu(){
+    user_input = "";
+    while(1){
+        cout << "[³» Á¤º¸ ¸Þ´º]" << endl;
+        cout << "| »ç¿ëÀÚ Á¤º¸ Á¶È¸ | »ç¿ëÀÚ Á¤º¸ º¯°æ | »ç¿ëÀÚ »èÁ¦ | ³»°¡ ¾´ Æ÷½ºÆ® º¸±â | ³»°¡ ¾´ ´ñ±Û º¸±â | µÚ·Î°¡±â |" << endl;
+        cout << "ÀÌ¿ëÇÒ ¼­ºñ½º¸¦ ÀÔ·ÂÇÏ¼¼¿ä. : ";
+        getline(cin, user_input);
+        cout << endl;
+
+        if(user_input == "»ç¿ëÀÚ Á¤º¸ Á¶È¸"){
+            check_me();
+        }
+        else if(user_input == "»ç¿ëÀÚ Á¤º¸ º¯°æ"){
+            update_me();
+        }
+        else if(user_input == "»ç¿ëÀÚ »èÁ¦"){
+            delete_me();
+            break;
+        }
+        else if(user_input == "³»°¡ ¾´ Æ÷½ºÆ® º¸±â"){
+            check_my_posts();
+        }
+        else if(user_input == "³»°¡ ¾´ ´ñ±Û º¸±â"){
+            check_my_comments();
+        }
+        else if(user_input == "µÚ·Î°¡±â"){
+            return;
+        }
+    }
+}
+void choosing_post_menu(){
+    user_input = "";
+        while(1){
+            post_list();
+            cout << "| Æ÷½ºÆ® ³»¿ëº¸±â | µÚ·Î°¡±â |" << endl;
+            cout << "ÀÌ¿ëÇÒ ¼­ºñ½º¸¦ ÀÔ·ÂÇÏ¼¼¿ä. : ";
+            getline(cin, user_input);
+            cout << endl;
+
+            if(user_input == "Æ÷½ºÆ® ³»¿ëº¸±â"){
+                choose_post();
+                while(1){
+                    cout << "| ´ñ±ÛÀÔ·Â | µÚ·Î°¡±â|" << endl;
+                    cout << "ÀÌ¿ëÇÒ ¼­ºñ½º¸¦ ÀÔ·ÂÇÏ¼¼¿ä. : ";
+                    getline(cin, user_input);
+                    cout << endl;
+                    if(user_input == "´ñ±ÛÀÔ·Â"){
+                        write_comment();
+                    }
+                    else if(user_input == "µÚ·Î°¡±â"){
+                        return;
+                    }
+                }
+            }
+            if(user_input == "µÚ·Î°¡±â")
+                return;
+        }
+
+}
+void posting_menu(){
+    user_input="";
+    while(1){
+        cout << "[Æ÷½ºÆÃ ¸Þ´º]" << endl;
+        cout << "| Æ÷½ºÆ® ÀÛ¼º | Æ÷½ºÆ® ¸ñ·Ï Á¶È¸ | µÚ·Î°¡±â |" << endl;
+        cout << "ÀÌ¿ëÇÒ ¼­ºñ½º¸¦ ÀÔ·ÂÇÏ¼¼¿ä. : ";
+        getline(cin, user_input);
+        cout << endl;
+
+        if(user_input == "Æ÷½ºÆ® ÀÛ¼º"){
+            upload_post();
+        }
+        else if(user_input == "Æ÷½ºÆ® ¸ñ·Ï Á¶È¸"){
+            choosing_post_menu();
+        }
+        else if(user_input == "µÚ·Î°¡±â"){
+            return;
+        }
+    }
+}
+void search_menu(){
+    user_input="";
+    while(1){
+        cout << "[°Ë»ö ¸Þ´º]" << endl;
+        cout << "| ´Ù¸¥ »ç¿ëÀÚ °Ë»ö | Æ÷½ºÆ® °Ë»ö | µÚ·Î°¡±â |" << endl;
+        cout << "ÀÌ¿ëÇÒ ¼­ºñ½º¸¦ ÀÔ·ÂÇÏ¼¼¿ä. : ";
+        getline(cin, user_input);
+        cout << endl;
+
+        if(user_input == "´Ù¸¥ »ç¿ëÀÚ °Ë»ö"){
+            search_user();
+        }
+        else if(user_input == "Æ÷½ºÆ® °Ë»ö"){
+            search_post();
+        }
+        else if(user_input == "µÚ·Î°¡±â"){
+            return;
+        }
+    }
+}
+void home_menu(){
+    user_input="";
+    while(1){
+        cout << "[¸ÞÀÎ¸Þ´º]" << endl;
+        cout << "| ³» Á¤º¸ | Æ÷½ºÆÃ | Å½»ö | ·Î±×¾Æ¿ô | Á¾·á |" << endl;
+        cout << "ÀÌ¿ëÇÒ ¼­ºñ½º¸¦ ÀÔ·ÂÇÏ¼¼¿ä. : ";
+        getline(cin, user_input);
+        cout << endl;
+
+        if(user_input == "³» Á¤º¸"){
+            me_menu();
+            if(user_input == "»ç¿ëÀÚ »èÁ¦"){
+                break;
+            }
+        }
+        else if(user_input == "Æ÷½ºÆÃ"){
+            posting_menu();
+        }
+        else if(user_input == "Å½»ö"){
+            search_menu();
+        }
+        else if(user_input == "·Î±×¾Æ¿ô"){
+            logout();
+            break;
+        }
+        else if(user_input == "Á¾·á"){
+            cout << "ÇÁ·Î±×·¥À» Á¾·áÇÕ´Ï´Ù." << endl;
+            break;
+        }
+    }
+}
+void logout(){
+    cout << "·Î±×¾Æ¿ôÀÌ ¿Ï·áµÇ¾ú½À´Ï´Ù." << endl << endl;
+}
+void check_me(){
+    cout << "[»ç¿ëÀÚ Á¤º¸ Á¶È¸]" << endl;
+    cout << "ÀÌ¸§ : È«±æµ¿" << endl;
+    cout << "³ªÀÌ : 30¼¼" << endl << endl;
+}
+void update_me(){
+    cout << "[»ç¿ëÀÚ Á¤º¸ º¯°æ]" << endl;
+    cout << "Á¤º¸ º¯°æ ¿Ï·á" << endl << endl;
+}
+void delete_me(){
+    cout << "[»ç¿ëÀÚ »èÁ¦]" << endl;
+    cout << "»ç¿ëÀÚ »èÁ¦ ¿Ï·á" << endl << endl;
+}
+void check_my_posts(){
+    cout << "[³»°¡ ¾´ Æ÷½ºÆ® º¸±â]" << endl;
+    cout << "³»°¡ ¾´ Æ÷½ºÆ® ¸ñ·Ïµé" << endl << endl;
+}
+void check_my_comments(){
+    cout << "[³»°¡ ¾´ ´ñ±Û º¸±â]" << endl;
+    cout << "³»°¡ ¾´ ´ñ±Û ¸ñ·Ïµé" << endl << endl;
+}
+void upload_post(){
+    cout << "[Æ÷½ºÆ® ÀÛ¼º]" << endl;
+    cout << "Æ÷½ºÆ® ÀÛ¼º ¿Ï·á" << endl << endl;
+}
+void post_list(){
+    cout << "[Æ÷½ºÆ® ¸ñ·Ï Á¶È¸]" << endl;
+    cout << "Æ÷½ºÆ®1\nÆ÷½ºÆ®2\nÆ÷½ºÆ®3" << endl << endl;
+}
+void choose_post(){
+    char yn = 'n';
+    cout << "³»¿ëÀ» º¼ Æ÷½ºÆ®¸¦ ÀÔ·ÂÇÏ¼¼¿ä : ";
+    getline(cin, user_input);
+    cout <<user_input << "ÀÇ ³»¿ë" << endl;
+    comment_list();
+}
+void comment_list(){
+    cout << "´ñ±Û ¸ñ·Ïµé Á¶È¸ ¿Ï·á" << endl << endl;
+}
+void write_comment(){
+    cout << "´ñ±Û ÀÔ·Â¿Ï·á" << endl << endl;
+}
+void search_user(){
+    cout << "°Ë»öµÈ À¯Àú ¸ñ·Ï Á¶È¸ ¿Ï·á" << endl << endl;
+}
+void search_post(){
+    cout << "°Ë»öµÈ Æ÷½ºÆ® ¸ñ·Ï Á¶È¸ ¿Ï·á" << endl << endl;
+}
 
 
 int main(){
-    first_menu();
-
+    login_menu();
 
     return 0;
 }
