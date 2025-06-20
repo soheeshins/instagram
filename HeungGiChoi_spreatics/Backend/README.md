@@ -226,10 +226,9 @@
    - status (string): selected
    - user_id (int): 조회 시, 커맨트를 단 사용자 id
    - post_id (int): 조회 시, 커맨트 달린 post id
-   - title (string): 조회 시, 커맨트 달린 post 제목
    - comment_id (int): 조회 시, 커맨트 id
    - text (string): 조회 시, 커맨트 내용
-   - create_at (string): 조회 시, 커맨트 생성 일자
+   - created_at (string): 조회 시, 커맨트 생성 일자
 ~~~
 {
    "status": "selected",
@@ -261,10 +260,7 @@
 ~~~
 {
    "status": "created",
-   "user_id": 3,
-   "comment_id": 1,
-   "text": "꼭 보러 가겠습니다!",
-   "create_at": "2025-06-19"
+   "user_id": 3
 }
 
 {
