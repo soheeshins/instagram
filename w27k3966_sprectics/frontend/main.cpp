@@ -20,18 +20,24 @@ void m_1_login() {
 }
 
 void m_1_signup() {
-    string name, id, password;
+    string nickname, id, password, email;
 
     cout << "회원가입" << endl;
 
-    cout << "name : " <<endl;
-    cin >> name;
+    cout << "nickname : " <<endl;
+    cin >> nickname;
 
     cout << "id : " <<endl;
     cin >> id;
 
     cout << "password : " <<endl;
     cin >> password;
+
+    cout << "password 확인: " <<endl;
+    cin >> password;
+
+    cout << " email : " << endl;
+    cin >> email;
 
 
     cout << "== 회원가입 완료 ==" <<endl;
