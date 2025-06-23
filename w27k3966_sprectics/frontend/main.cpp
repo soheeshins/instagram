@@ -6,7 +6,7 @@ using namespace httplib;
 using json = nlohmann::json;
 
 Client cli("http://43.200.10.134:5001");  // EC2 서버 주소
-int user_id = 0;
+int user_id = -1;
 
 // 로그인 함수
 void m_1_login() {
@@ -50,7 +50,7 @@ void m_1_login() {
 // 회원가입 함수
 void m_1_signup() {
     string nickname, password, name, age, email;
-    cin.ignore(); // 개행 제거
+    cin.ignore(); 
 
     cout << "[회원가입]" << endl;
 
@@ -103,7 +103,7 @@ void m_1_signup() {
 // 로그인/회원가입 메뉴
 void m_1_userLogin() {
     while (true) {
-        cout << "[1. 로그인]" << endl;
+        cout << "[ 1. 로그인 & 회워가입 ]" << endl;
         cout << "1. 로그인" << endl;
         cout << "2. 회원가입" << endl;
         cout << "3. 뒤로가기" << endl;
@@ -119,8 +119,9 @@ void m_1_userLogin() {
                 break;
             case 3:
                 return;
+                break;
             default:
-                cout << "잘못된 입력입니다." << endl;
+                break;
         }
     }
 }
