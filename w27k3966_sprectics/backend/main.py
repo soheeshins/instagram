@@ -79,7 +79,7 @@ def user_login():
 @app.route('/users/<int:user_id>', methods=['GET'])
 def get_user_info(user_id):
     conn = get_connection()
-    with conn.cursor(DictCursor) as cursor:
+    with conn.cursor(pymysql.cursors.DictCursor) as cursor:
         sql = "SELECT user_id, nickname, name, email, age FROM users WHERE user_id = %s"
         cursor.execute(sql, (user_id,))
         result = cursor.fetchone()
