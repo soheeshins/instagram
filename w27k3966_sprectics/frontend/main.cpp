@@ -131,7 +131,7 @@ void m_1_userLogin() {
 
 // 1-1 내 정보 보기
 
-void view_other_user() {
+void view_my_info() {
     string id_str;
     cout << "\n[다른 사용자 조회]" << endl;
     cout << "조회할 user_id 입력: ";
