@@ -9,7 +9,7 @@ def get_connection():
        host='database-1.cts2qeeg0ot5.ap-northeast-2.rds.amazonaws.com',
         user='kevin',
         password='spreatics*',
-        db='instagram',
+        db='instagram_sohee',
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor
     )
